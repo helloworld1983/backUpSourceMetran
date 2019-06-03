@@ -1,0 +1,277 @@
+/******************************************************************************/
+//$COMMON.H$
+//   File Name:  BdTask.h
+//   Copyright 1997 Inventive Technologies,Inc. All Rights Reserved.
+//
+//   Class: This file contains the class declarations for the Breath Delivery
+//      Task.  The BdTask class is derived from the Nucleus Plus RTOS base
+//      Task class.
+//
+/******************************************************************************/
+#ifndef BDTASK_H
+#define BDTASK_H
+
+#include "BdInterface.h"
+#include "MyQueue.h"
+
+/******************************************************************************/
+//      CONSTANT DEFINITIONS
+/******************************************************************************/
+const UNSIGNED INITIAL_SETTING_TIMEOUT = 5000 / MS_PER_TICK;
+
+/******************************************************************************/
+//      CLASS DECLARATIONS
+/******************************************************************************/
+class BdTask
+{
+    public:
+        static inline BdTask* S_GetInstance (void);
+
+        inline STATUS Send (BdBatchSettingsChangeEvent& batchEvent,
+                            UNSIGNED suspend = NU_SUSPEND);
+        inline STATUS Send (BdSingleSettingChangeEvent& singleSetEvent,
+                            UNSIGNED suspend = NU_SUSPEND);
+        inline STATUS Send (BdOpRequestEvent& opReqEvent, UNSIGNED suspend =
+                                    NU_SUSPEND);
+        inline STATUS Send (BdBasicEvent& basicEvent, UNSIGNED suspend =
+                                    NU_SUSPEND);
+
+        virtual E_ReturnStatus Send (E_DeviceId id);
+
+    protected:
+        virtual void Entry (void);
+
+    private:
+        BdTask (void);
+        BdTask (const BdTask&);
+
+        //$COMMON.ATTRIBUTE$
+        //  Name: S_Instance
+        //  Description:  Pointer to the single instance of this class.  
+        //  Units: None
+        //  Range: n/a
+        static BdTask* S_Instance;
+
+        //$COMMON.ATTRIBUTE$
+        //  Name: QueuePointer
+        //  Description:  Pointer to BD Task's Queue
+        //  Units: None
+        //  Range: n/a
+        Q* QueuePtr;
+
+};
+
+/******************************************************************************/
+//      INLINE OPERATIONS
+/******************************************************************************/
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: S_GetInstance()
+//
+//    Processing: 
+//      Since only 1 instance of this object should be created, any access
+//      to the object comes via this operation.  If any other object wants 
+//      access to the BdTask object, it invokes BdTask::S_GetInstance(),
+//      which returns a pointer to the BdTask object.
+//
+//      If the object has not already been created, this method instantiates 
+//      it and returns a pointer to the object.  If the object has already been 
+//      instantiated, a pointer to the object is returned.
+//
+//    Input Parameters:
+//      None
+//
+//    Output Parameters:
+//      None
+//
+//    Return Values:
+//      BdTask* - pointer to the object instantiated from this class
+//
+//    Pre-Conditions:
+//      None
+//
+//    Miscellaneous:
+//      None
+//
+//    Requirements:  
+//
+/******************************************************************************/
+inline BdTask* BdTask::S_GetInstance (void)
+{
+    // If the object has not already been created, create it.
+    if(NULL == S_Instance)
+    {
+        S_Instance = new BdTask ();
+        ASSERTION(S_Instance != NULL);
+    }
+
+    return (S_Instance);
+
+}   // end S_GetInstance()
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: Send()
+//
+//    Processing: 
+//      This operation invokes the Nucleus Plus RTOS kernel service Q::Send()
+//      to place a Batch Setting Event on the BD Queue.  This operation is
+//      not invoked in the BD Task thread of control; it is called by other
+//      tasks wanting to communicate with the BD Task via its queue.
+//
+//    Input Parameters:
+//      batchEvent - reference to a Batch Settings Change Event message
+//      suspend - indicates if the calling task should suspend if the queue
+//          is full
+//
+//    Output Parameters:
+//      None
+//
+//    Return Values:
+//      STATUS - completion status for the Nucleus Plus kernel service Send()
+//
+//    Pre-Conditions:
+//      None
+//
+//    Miscellaneous:
+//      None
+//
+//    Requirements:  
+//
+/******************************************************************************/
+inline STATUS BdTask::Send (BdBatchSettingsChangeEvent& batchEvent,
+                            UNSIGNED suspend)
+{
+    // This value specifies the size of a Batch Setting Event.
+    const UNSIGNED EVENT_SIZE = (sizeof(BdBatchSettingsChangeEvent)
+            + sizeof(UNSIGNED) - 1) / sizeof(UNSIGNED);
+
+    return (BdTask::QueuePtr->Send (&batchEvent, EVENT_SIZE, suspend));
+
+}   // end Send()
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: Send()
+//
+//    Processing: 
+//      This operation invokes the Nucleus Plus RTOS kernel service Q::Send()
+//      to place a Single Setting Event on the BD Queue.  This operation is
+//      not invoked in the BD Task thread of control; it is called by other
+//      tasks wanting to communicate with the BD Task via its queue.
+//
+//    Input Parameters:
+//      singleSetEvent - reference to a Single Setting Change Event message
+//      suspend - indicates if the calling task should suspend if the queue
+//          is full
+//
+//    Output Parameters:
+//      None
+//
+//    Return Values:
+//      STATUS - completion status for the Nucleus Plus kernel service Send()
+//
+//    Pre-Conditions:
+//      None
+//
+//    Miscellaneous:
+//      None
+//
+//    Requirements:  
+//
+/******************************************************************************/
+inline STATUS BdTask::Send (BdSingleSettingChangeEvent& singleSetEvent,
+                            UNSIGNED suspend)
+{
+    // This value specifies the size of a Single Setting Event.
+    const UNSIGNED EVENT_SIZE = (sizeof(BdSingleSettingChangeEvent)
+            + sizeof(UNSIGNED) - 1) / sizeof(UNSIGNED);
+
+    return (BdTask::QueuePtr->Send (&singleSetEvent, EVENT_SIZE, suspend));
+
+}   // end Send()
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: Send()
+//
+//    Processing: 
+//      This operation invokes the Nucleus Plus RTOS kernel service Q::Send()
+//      to place an Operator Request Event on the BD Queue.  This operation is
+//      not invoked in the BD Task thread of control; it is called by other
+//      tasks wanting to communicate with the BD Task via its queue.
+//
+//    Input Parameters:
+//      opReqEvent - reference to an Operator Request Event message
+//      suspend - indicates if the calling task should suspend if the queue
+//          is full
+//
+//    Output Parameters:
+//      None
+//
+//    Return Values:
+//      STATUS - completion status for the Nucleus Plus kernel service Send()
+//
+//    Pre-Conditions:
+//      None
+//
+//    Miscellaneous:
+//      None
+//
+//    Requirements:  
+//
+/******************************************************************************/
+inline STATUS BdTask::Send (BdOpRequestEvent& opReqEvent, UNSIGNED suspend)
+{
+    // This value specifies the size of an Operator Request Event.
+    const UNSIGNED EVENT_SIZE =
+            (sizeof(BdOpRequestEvent) + sizeof(UNSIGNED) - 1)
+                    / sizeof(UNSIGNED);
+
+    return (BdTask::QueuePtr->Send (&opReqEvent, EVENT_SIZE, suspend));
+
+}   // end Send()
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: Send()
+//
+//    Processing: 
+//      This operation invokes the Nucleus Plus RTOS kernel service Q::Send()
+//      to place a Basic Event on the BD Queue.  This operation is
+//      not invoked in the BD Task thread of control; it is called by other
+//      tasks wanting to communicate with the BD Task via its queue.
+//
+//    Input Parameters:
+//      basicEvent - reference to an Operator Request Event message
+//      suspend - indicates if the calling task should suspend if the queue
+//          is full
+//
+//    Output Parameters:
+//      None
+//
+//    Return Values:
+//      STATUS - completion status for the Nucleus Plus kernel service Send()
+//
+//    Pre-Conditions:
+//      None
+//
+//    Miscellaneous:
+//      None
+//
+//    Requirements:  
+//
+/******************************************************************************/
+inline STATUS BdTask::Send (BdBasicEvent& basicEvent, UNSIGNED suspend)
+{
+    // This value specifies the size of a Basic Event.
+    const UNSIGNED EVENT_SIZE = (sizeof(BdBasicEvent) + sizeof(UNSIGNED) - 1)
+            / sizeof(UNSIGNED);
+
+    return (BdTask::QueuePtr->Send (&basicEvent, EVENT_SIZE, suspend));
+
+}   // end Send()
+
+#endif BDTASK_H
+

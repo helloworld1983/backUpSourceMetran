@@ -1,0 +1,275 @@
+#if defined (__USE_LPCOPEN)
+#if defined(NO_BOARD_LIB)
+#include "chip.h"
+#else
+#include "board.h"
+#endif
+#endif
+
+#include <cr_section_macros.h>
+#include "ProxyFlowSensor.h"
+#include "DebugTrace.h"
+#include "Delay.h"
+
+void GetDeviceName(void)
+{
+    ProxySensorSendFrameData GetDeviceName;
+
+    GetDeviceName.Address = 0x00;
+    GetDeviceName.CMD = 0xD0;
+    GetDeviceName.LengTH = 0x01;
+    GetDeviceName.Data[0] = 0x01;
+
+    uint8_t DataToSen[6 + GetDeviceName.LengTH] = {};
+    uint32_t SizeofData;
+
+    ProxyFlowSensor::S_GetInstance()->GenerateFrameData(&GetDeviceName, DataToSen, SizeofData);
+
+    for(uint32_t i = 0; i < SizeofData; ++i)
+    {
+        DEBUG_PROXYFLOWTASK("%x ", DataToSen[i]);
+    }
+    DEBUG_PROXYFLOWTASK("\n");
+
+    uint8_t Data[] = {};
+    uint64_t DSize = 0;
+
+    ProxyFlowSensor::S_GetInstance()->ConvertByteArrayToSend(DataToSen, SizeofData, Data, DSize);
+
+    for(uint32_t i = 0; i < DSize; ++i)
+    {
+        DEBUG_PROXYFLOWTASK("%x ", Data[i]);
+    }
+    DEBUG_PROXYFLOWTASK("\n");
+
+
+//    vTaskSuspendAll();
+//    ProxyFlowSensor::S_GetInstance()->SendDataToUART(DataToSen, SizeofData);
+    ProxyFlowSensor::S_GetInstance()->SendDataToUART(Data, DSize);
+//    xTaskResumeAll();
+
+    uint8_t cmd[32]= {0};
+    int num = ProxyFlowSensor::S_GetInstance()->ReadDataFromUART(cmd, 32);
+
+    DEBUG_PROXYFLOWTASK("Read data(%d) \n", num);
+    for(int i = 0; i < num; ++i)
+    {
+        DEBUG_PROXYFLOWTASK("%c ", cmd[i]);
+    }
+
+    DEBUG_PROXYFLOWTASK("\n\n ");
+    ProxySensorRecFrameData recData;
+
+    if(ProxyFlowSensor::S_GetInstance()->ConvertReceiveDataToFrameData(cmd, num, &recData))
+    {
+        DEBUG_PROXYFLOWTASK("OK\n");
+    }
+    else
+    {
+        DEBUG_PROXYFLOWTASK("BAD\n");
+    }
+}
+
+void StartSingleMeasure(void)
+{
+    int num = 0;
+    uint8_t recData[32] = {0};
+
+    ProxySensorSendFrameData StartSingleMeasure;
+
+    StartSingleMeasure.Address = 0x00;
+    StartSingleMeasure.CMD = 0x31;
+    StartSingleMeasure.LengTH = 0x00;
+
+    uint8_t StartSingleMeasureData[6 + StartSingleMeasure.LengTH] = {};
+    uint32_t SizeofStartSingleMeasureData = 0;
+    uint8_t TempData[] = {};
+    uint64_t TempSize = 0;
+
+    ProxyFlowSensor::S_GetInstance()->GenerateFrameData(&StartSingleMeasure, StartSingleMeasureData, SizeofStartSingleMeasureData);
+    ProxyFlowSensor::S_GetInstance()->ConvertByteArrayToSend(StartSingleMeasureData, SizeofStartSingleMeasureData, TempData, TempSize);
+    ProxyFlowSensor::S_GetInstance()->SendDataToUART(TempData, TempSize);
+
+    num = ProxyFlowSensor::S_GetInstance()->ReadDataFromUART(recData, 32);
+
+    DEBUG_PROXYFLOWTASK("A = ");
+    for(int i = 0; i <num; ++i)
+    {
+        DEBUG_PROXYFLOWTASK("%x ", recData[i]);
+    }
+    DEBUG_PROXYFLOWTASK("\n");
+
+    if((recData[2] == 0x32) && (recData[4] != 0))
+    {
+        uint16_t temp = (recData[5] << 8) + recData[6];
+         temp = ((temp ^ 65535) + 1);
+
+        DEBUG_PROXYFLOWTASK("\t\t%x %x -%d", recData[5], recData[6], temp);
+    }
+
+}
+
+void GetSingleMeasure(void)
+{
+    int num = 0;
+    uint8_t recData[32] = {0};
+
+    ProxySensorSendFrameData GetSingleMeasure;
+
+    GetSingleMeasure.Address = 0x00;
+    GetSingleMeasure.CMD = 0x32;
+    GetSingleMeasure.LengTH = 0x00;
+
+    uint8_t GetSingleMeasureData[6 + GetSingleMeasure.LengTH] = {};
+    uint32_t SizeofGetSingleMeasureData = 0;
+
+    uint8_t TempData[] = {};
+    uint64_t TempSize = 0;
+
+    ProxyFlowSensor::S_GetInstance()->GenerateFrameData(&GetSingleMeasure, GetSingleMeasureData, SizeofGetSingleMeasureData);
+    ProxyFlowSensor::S_GetInstance()->ConvertByteArrayToSend(GetSingleMeasureData, SizeofGetSingleMeasureData, TempData, TempSize);
+    ProxyFlowSensor::S_GetInstance()->SendDataToUART(TempData, TempSize);
+
+    DEBUG_PROXYFLOWTASK("B = ");
+    for(int i = 0; i <num; ++i)
+    {
+        DEBUG_PROXYFLOWTASK("%x ", recData[i]);
+    }
+    DEBUG_PROXYFLOWTASK("\n");
+
+    num = ProxyFlowSensor::S_GetInstance()->ReadDataFromUART(recData, 32);
+
+    if((recData[2] == 0x32) && (recData[4] != 0))
+    {
+        uint16_t temp = (recData[5] << 8) + recData[6];
+         temp = ((temp ^ 65535) + 1);
+
+
+        DEBUG_PROXYFLOWTASK("\t\t%x %x -%d", recData[5], recData[6], temp);
+    }
+
+}
+
+
+void StartContinuousMeasurement(void)
+{
+    int num = 0;
+    uint8_t recData[32] = {0};
+
+    ProxySensorSendFrameData StartContMeas;
+
+    StartContMeas.Address = 0x00;
+    StartContMeas.CMD = 0x33;
+    StartContMeas.LengTH = 0x02;
+
+    StartContMeas.Data[0] = 0x00;
+    StartContMeas.Data[1] = 0x02;
+
+
+    uint8_t StartContinuousMeasurement[6 + StartContMeas.LengTH] = {};
+    uint32_t SizeofStartContinuousMeasurement = 0;
+
+    uint8_t TempData[] = {};
+    uint64_t TempSize = 0;
+
+    ProxyFlowSensor::S_GetInstance()->GenerateFrameData(&StartContMeas, StartContinuousMeasurement, SizeofStartContinuousMeasurement);
+    ProxyFlowSensor::S_GetInstance()->ConvertByteArrayToSend(StartContinuousMeasurement, SizeofStartContinuousMeasurement, TempData, TempSize);
+    DEBUG_PROXYFLOWTASK("SEND = ");
+    for(int i  = 0; i  < TempSize; ++i)
+    {
+        DEBUG_PROXYFLOWTASK("%x ", TempData[i]);
+    }
+    DEBUG_PROXYFLOWTASK("\n");
+    ProxyFlowSensor::S_GetInstance()->SendDataToUART(TempData, TempSize);
+
+    num = ProxyFlowSensor::S_GetInstance()->ReadDataFromUART(recData, 32);
+    DEBUG_PROXYFLOWTASK("REC = ");
+    for(int i  = 0; i  < num; ++i)
+    {
+        DEBUG_PROXYFLOWTASK("%x ", recData[i]);
+    }
+    DEBUG_PROXYFLOWTASK("\n");
+}
+
+void GetLastMeasure(void)
+{
+    int num = 0;
+    uint8_t recData[32] = {0};
+
+    ProxySensorSendFrameData GetLastMeasure;
+
+    GetLastMeasure.Address = 0x00;
+    GetLastMeasure.CMD = 0x35;
+    GetLastMeasure.LengTH = 0x00;
+
+
+
+    uint8_t GetLastArr[6 + GetLastMeasure.LengTH] = {};
+    uint32_t SizeofGetLastArr = 0;
+
+    uint8_t TempData[] = {};
+    uint64_t TempSize = 0;
+
+    ProxyFlowSensor::S_GetInstance()->GenerateFrameData(&GetLastMeasure, GetLastArr, SizeofGetLastArr);
+    ProxyFlowSensor::S_GetInstance()->ConvertByteArrayToSend(GetLastArr, SizeofGetLastArr, TempData, TempSize);
+    DEBUG_PROXYFLOWTASK("SEND = ");
+    for(int i  = 0; i  < TempSize; ++i)
+    {
+        DEBUG_PROXYFLOWTASK("%x ", TempData[i]);
+    }
+    DEBUG_PROXYFLOWTASK("\n");
+    ProxyFlowSensor::S_GetInstance()->SendDataToUART(TempData, TempSize);
+
+    num = ProxyFlowSensor::S_GetInstance()->ReadDataFromUART(recData, 32);
+    DEBUG_PROXYFLOWTASK("REC = ");
+    for(int i  = 0; i  < num; ++i)
+    {
+        DEBUG_PROXYFLOWTASK("%x ", recData[i]);
+    }
+    DEBUG_PROXYFLOWTASK("\n %d", recData[5] << 8 + recData[6]);
+}
+
+
+
+int main(void) {
+
+
+#if defined (__USE_LPCOPEN)
+    // Read clock settings and update SystemCoreClock variable
+    SystemCoreClockUpdate();
+#if !defined(NO_BOARD_LIB)
+#if defined (__MULTICORE_MASTER) || defined (__MULTICORE_NONE)
+    // Set up and initialize all required blocks and
+    // functions related to the board hardware
+    Board_Init();
+#endif
+#endif
+#endif
+
+    Chip_SCU_ClockPinMuxSet(0, SCU_MODE_FUNC1);
+
+    Chip_Clock_SetDivider(CLK_IDIV_E, CLKIN_MAINPLL, 17);
+    Chip_Clock_SetBaseClock(CLK_BASE_OUT, CLKIN_IDIVE, true, false);
+
+    ProxyFlowSensor::S_GetInstance()->Init();
+
+    Board_UARTDebug("Main\n");
+
+    StartContinuousMeasurement();
+
+
+    while(1)
+    {
+//        StartSingleMeasure();
+//        delay_ms(100);
+//
+//        GetSingleMeasure();
+//        delay_ms(100);
+        DEBUG_PROXYFLOWTASK("====================\n");
+        GetLastMeasure();
+        delay_ms(5);
+
+
+    }
+    return 0 ;
+}

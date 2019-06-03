@@ -1,0 +1,4 @@
+description.buildorder=lpc_board_nxp_lpcxpresso_4337/lpc_board_nxp_lpcxpresso_4337_m0/lpc_chip_43xx/lpc_chip_43xx_m0/lib_lpcspifilib/FreeRTOS/Portable_Bootloader/Vue
+description.defaultbuildorder=false
+eclipse.preferences.version=1
+version=1

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;Vue/BD/src/BdTask.h&apos; to &apos;BdTask.cpp&apos;" description="Rename resource &apos;BdTask.h&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="BD/src/BdTask.h" name="BdTask.cpp" stamp="1535005630766" updateReferences="true"/>
+</session>

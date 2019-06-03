@@ -1,0 +1,6 @@
+15:26:27 **** Incremental Build of configuration Release for project FreeRTOS ****
+make -r -j4 all 
+make: Nothing to be done for `all'.
+
+15:26:27 Build Finished (took 116ms)
+

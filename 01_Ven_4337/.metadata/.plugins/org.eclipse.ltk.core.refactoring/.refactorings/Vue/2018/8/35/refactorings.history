@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;Vue/linkscripts/NVen_Debug.ld&apos; to &apos;NVen_Debug_Test.ld&apos;" description="Rename resource &apos;NVen_Debug.ld&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="linkscripts/NVen_Debug.ld" name="NVen_Debug_Test.ld" stamp="1535337005982" updateReferences="true"/>
+</session>

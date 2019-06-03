@@ -1,0 +1,86 @@
+15:26:28 **** Incremental Build of configuration Release for project TestDevices ****
+make -r -j4 all 
+Building file: ../src/TestDevices.cpp
+Building file: ../TestUsb/src/TestUSB.cpp
+Building file: ../TestMotorSPI/src/TestMotorSPI.cpp
+Building file: ../TestFlowSensorI2C/src/TestFlowSenI2C1.cpp
+Invoking: MCU C++ Compiler
+Invoking: MCU C++ Compiler
+arm-none-eabi-c++ -D__MULTICORE_NONE -D__NEWLIB__ -DNDEBUG -D__CODE_RED -DCORE_M4 -D__USE_LPCOPEN -DCPP_USE_HEAP -D__LPC43XX__ -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestUsb\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestMotorSPI\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestFlowSensorI2C\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestFlowRS485\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestADC\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestDigitalIO\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\FreeRTOS\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lib_lpcspifilib\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_board_nxp_lpcxpresso_4337\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc\usbd" -Os -fno-common -Os -g -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions -fsingle-precision-constant -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -mthumb -MMD -MP -MF"src/TestDevices.d" -MT"src/TestDevices.o" -MT"src/TestDevices.d" -o "src/TestDevices.o" "../src/TestDevices.cpp"
+Invoking: MCU C++ Compiler
+arm-none-eabi-c++ -D__MULTICORE_NONE -D__NEWLIB__ -DNDEBUG -D__CODE_RED -DCORE_M4 -D__USE_LPCOPEN -DCPP_USE_HEAP -D__LPC43XX__ -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestUsb\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestMotorSPI\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestFlowSensorI2C\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestFlowRS485\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestADC\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestDigitalIO\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\FreeRTOS\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lib_lpcspifilib\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_board_nxp_lpcxpresso_4337\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc\usbd" -Os -fno-common -Os -g -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions -fsingle-precision-constant -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -mthumb -MMD -MP -MF"TestUsb/src/TestUSB.d" -MT"TestUsb/src/TestUSB.o" -MT"TestUsb/src/TestUSB.d" -o "TestUsb/src/TestUSB.o" "../TestUsb/src/TestUSB.cpp"
+Invoking: MCU C++ Compiler
+arm-none-eabi-c++ -D__MULTICORE_NONE -D__NEWLIB__ -DNDEBUG -D__CODE_RED -DCORE_M4 -D__USE_LPCOPEN -DCPP_USE_HEAP -D__LPC43XX__ -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestUsb\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestMotorSPI\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestFlowSensorI2C\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestFlowRS485\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestADC\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestDigitalIO\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\FreeRTOS\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lib_lpcspifilib\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_board_nxp_lpcxpresso_4337\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc\usbd" -Os -fno-common -Os -g -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions -fsingle-precision-constant -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -mthumb -MMD -MP -MF"TestMotorSPI/src/TestMotorSPI.d" -MT"TestMotorSPI/src/TestMotorSPI.o" -MT"TestMotorSPI/src/TestMotorSPI.d" -o "TestMotorSPI/src/TestMotorSPI.o" "../TestMotorSPI/src/TestMotorSPI.cpp"
+arm-none-eabi-c++ -D__MULTICORE_NONE -D__NEWLIB__ -DNDEBUG -D__CODE_RED -DCORE_M4 -D__USE_LPCOPEN -DCPP_USE_HEAP -D__LPC43XX__ -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestUsb\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestMotorSPI\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestFlowSensorI2C\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestFlowRS485\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestADC\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestDigitalIO\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\FreeRTOS\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lib_lpcspifilib\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_board_nxp_lpcxpresso_4337\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc\usbd" -Os -fno-common -Os -g -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions -fsingle-precision-constant -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -mthumb -MMD -MP -MF"TestFlowSensorI2C/src/TestFlowSenI2C1.d" -MT"TestFlowSensorI2C/src/TestFlowSenI2C1.o" -MT"TestFlowSensorI2C/src/TestFlowSenI2C1.d" -o "TestFlowSensorI2C/src/TestFlowSenI2C1.o" "../TestFlowSensorI2C/src/TestFlowSenI2C1.cpp"
+Finished building: ../src/TestDevices.cpp
+Finished building: ../TestUsb/src/TestUSB.cpp
+Finished building: ../TestFlowSensorI2C/src/TestFlowSenI2C1.cpp
+ 
+ 
+Finished building: ../TestMotorSPI/src/TestMotorSPI.cpp
+ 
+Building file: ../TestFlowSensorI2C/src/TestFlowSensorTask.cpp
+Building file: ../TestFlowRS485/src/ProxyFlowSensor.cpp
+ 
+Invoking: MCU C++ Compiler
+arm-none-eabi-c++ -D__MULTICORE_NONE -D__NEWLIB__ -DNDEBUG -D__CODE_RED -DCORE_M4 -D__USE_LPCOPEN -DCPP_USE_HEAP -D__LPC43XX__ -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestUsb\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestMotorSPI\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestFlowSensorI2C\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestFlowRS485\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestADC\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestDigitalIO\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\FreeRTOS\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lib_lpcspifilib\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_board_nxp_lpcxpresso_4337\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc\usbd" -Os -fno-common -Os -g -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions -fsingle-precision-constant -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -mthumb -MMD -MP -MF"TestFlowSensorI2C/src/TestFlowSensorTask.d" -MT"TestFlowSensorI2C/src/TestFlowSensorTask.o" -MT"TestFlowSensorI2C/src/TestFlowSensorTask.d" -o "TestFlowSensorI2C/src/TestFlowSensorTask.o" "../TestFlowSensorI2C/src/TestFlowSensorTask.cpp"
+Invoking: MCU C++ Compiler
+arm-none-eabi-c++ -D__MULTICORE_NONE -D__NEWLIB__ -DNDEBUG -D__CODE_RED -DCORE_M4 -D__USE_LPCOPEN -DCPP_USE_HEAP -D__LPC43XX__ -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestUsb\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestMotorSPI\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestFlowSensorI2C\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestFlowRS485\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestADC\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestDigitalIO\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\FreeRTOS\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lib_lpcspifilib\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_board_nxp_lpcxpresso_4337\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc\usbd" -Os -fno-common -Os -g -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions -fsingle-precision-constant -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -mthumb -MMD -MP -MF"TestFlowRS485/src/ProxyFlowSensor.d" -MT"TestFlowRS485/src/ProxyFlowSensor.o" -MT"TestFlowRS485/src/ProxyFlowSensor.d" -o "TestFlowRS485/src/ProxyFlowSensor.o" "../TestFlowRS485/src/ProxyFlowSensor.cpp"
+Building file: ../TestFlowRS485/src/ProxyFlowTask.cpp
+Building file: ../TestDigitalIO/src/TestSolenoidValve.cpp
+Invoking: MCU C++ Compiler
+arm-none-eabi-c++ -D__MULTICORE_NONE -D__NEWLIB__ -DNDEBUG -D__CODE_RED -DCORE_M4 -D__USE_LPCOPEN -DCPP_USE_HEAP -D__LPC43XX__ -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestUsb\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestMotorSPI\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestFlowSensorI2C\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestFlowRS485\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestADC\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestDigitalIO\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\FreeRTOS\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lib_lpcspifilib\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_board_nxp_lpcxpresso_4337\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc\usbd" -Os -fno-common -Os -g -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions -fsingle-precision-constant -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -mthumb -MMD -MP -MF"TestFlowRS485/src/ProxyFlowTask.d" -MT"TestFlowRS485/src/ProxyFlowTask.o" -MT"TestFlowRS485/src/ProxyFlowTask.d" -o "TestFlowRS485/src/ProxyFlowTask.o" "../TestFlowRS485/src/ProxyFlowTask.cpp"
+Invoking: MCU C++ Compiler
+arm-none-eabi-c++ -D__MULTICORE_NONE -D__NEWLIB__ -DNDEBUG -D__CODE_RED -DCORE_M4 -D__USE_LPCOPEN -DCPP_USE_HEAP -D__LPC43XX__ -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestUsb\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestMotorSPI\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestFlowSensorI2C\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestFlowRS485\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestADC\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestDigitalIO\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\FreeRTOS\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lib_lpcspifilib\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_board_nxp_lpcxpresso_4337\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc\usbd" -Os -fno-common -Os -g -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions -fsingle-precision-constant -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -mthumb -MMD -MP -MF"TestDigitalIO/src/TestSolenoidValve.d" -MT"TestDigitalIO/src/TestSolenoidValve.o" -MT"TestDigitalIO/src/TestSolenoidValve.d" -o "TestDigitalIO/src/TestSolenoidValve.o" "../TestDigitalIO/src/TestSolenoidValve.cpp"
+../TestFlowRS485/src/ProxyFlowTask.cpp: In static member function 'static void ProxyFlowTask::Read(void*)':
+../TestFlowRS485/src/ProxyFlowTask.cpp:209:13: warning: unused variable 'num' [-Wunused-variable]
+         int num = ProxyFlowSensor::S_GetInstance()->ReadDataFromUART(cmd, 32);
+             ^
+Finished building: ../TestFlowSensorI2C/src/TestFlowSensorTask.cpp
+ 
+Finished building: ../TestDigitalIO/src/TestSolenoidValve.cpp
+Building file: ../TestADC/src/TestAdcPressureTask.cpp
+Finished building: ../TestFlowRS485/src/ProxyFlowTask.cpp
+ 
+Invoking: MCU C++ Compiler
+arm-none-eabi-c++ -D__MULTICORE_NONE -D__NEWLIB__ -DNDEBUG -D__CODE_RED -DCORE_M4 -D__USE_LPCOPEN -DCPP_USE_HEAP -D__LPC43XX__ -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestUsb\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestMotorSPI\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestFlowSensorI2C\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestFlowRS485\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestADC\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\TestDigitalIO\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\FreeRTOS\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lib_lpcspifilib\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_board_nxp_lpcxpresso_4337\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc\usbd" -Os -fno-common -Os -g -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions -fsingle-precision-constant -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -mthumb -MMD -MP -MF"TestADC/src/TestAdcPressureTask.d" -MT"TestADC/src/TestAdcPressureTask.o" -MT"TestADC/src/TestAdcPressureTask.d" -o "TestADC/src/TestAdcPressureTask.o" "../TestADC/src/TestAdcPressureTask.cpp"
+ 
+../TestFlowRS485/src/ProxyFlowSensor.cpp:59:16: warning: 'Rx_Buff' defined but not used [-Wunused-variable]
+ static uint8_t Rx_Buff[UART_RRB_SIZE], Tx_Buff[UART_SRB_SIZE];
+                ^
+../TestFlowRS485/src/ProxyFlowSensor.cpp:59:40: warning: 'Tx_Buff' defined but not used [-Wunused-variable]
+ static uint8_t Rx_Buff[UART_RRB_SIZE], Tx_Buff[UART_SRB_SIZE];
+                                        ^
+../TestADC/src/TestAdcPressureTask.cpp: In static member function 'static void TestAdcPressureTask::Entry(void*)':
+../TestADC/src/TestAdcPressureTask.cpp:56:9: warning: variable 'PressValue' set but not used [-Wunused-but-set-variable]
+     int PressValue = 0;
+         ^
+../TestADC/src/TestAdcPressureTask.cpp:57:9: warning: variable 'tempvalue' set but not used [-Wunused-but-set-variable]
+     int tempvalue = 0;
+         ^
+Finished building: ../TestFlowRS485/src/ProxyFlowSensor.cpp
+ 
+Finished building: ../TestADC/src/TestAdcPressureTask.cpp
+ 
+Building target: TestDevices.axf
+Invoking: MCU C++ Linker
+arm-none-eabi-c++ -nostdlib -L"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_board_nxp_lpcxpresso_4337\Release" -L"E:\myDrive\00_source_workspace\01_Ven_4337\FreeRTOS\Release" -L"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\Release" -Xlinker -Map="TestDevices.map" -Xlinker --gc-sections -Xlinker -print-memory-usage -mcpu=cortex-m4 -mthumb -T "TestDevices_Release.ld" -o "TestDevices.axf"  ./src/TestDevices.o ./src/cr_cpp_config.o ./src/cr_startup_lpc43xx.o ./src/crp.o ./src/sysinit.o  ./TestUsb/src/TestUSB.o ./TestUsb/src/libusbdev.o ./TestUsb/src/libusbdev_desc.o  ./TestMotorSPI/src/TestMotorSPI.o  ./TestFlowSensorI2C/src/TestFlowSenI2C1.o ./TestFlowSensorI2C/src/TestFlowSensorTask.o  ./TestFlowRS485/src/Delay.o ./TestFlowRS485/src/ProxyFlowSensor.o ./TestFlowRS485/src/ProxyFlowTask.o  ./TestDigitalIO/src/TestSolenoidValve.o  ./TestADC/src/TestAdcPressureTask.o   -llpc_board_nxp_lpcxpresso_4337 -lFreeRTOS -llpc_chip_43xx
+Memory region         Used Size  Region Size  %age Used
+      MFlashA512:       63736 B       512 KB     12.16%
+      MFlashB512:          0 GB       512 KB      0.00%
+        RamLoc32:        7520 B        32 KB     22.95%
+        RamLoc40:          0 GB        40 KB      0.00%
+        RamAHB32:          0 GB        32 KB      0.00%
+        RamAHB16:          0 GB        16 KB      0.00%
+    RamAHB_ETB16:          0 GB        16 KB      0.00%
+Finished building target: TestDevices.axf
+ 
+/bin/make --no-print-directory post-build
+Performing post-build steps
+arm-none-eabi-size "TestDevices.axf"; # arm-none-eabi-objcopy -v -O binary "TestDevices.axf" "TestDevices.bin" ; # checksum -p LPC4337 -d "TestDevices.bin";
+   text	   data	    bss	    dec	    hex	filename
+  61368	   2368	   5152	  68888	  10d18	TestDevices.axf
+ 
+
+15:26:30 Build Finished (took 1s.972ms)
+

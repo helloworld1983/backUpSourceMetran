@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="ExternalProjectImportWizard">
+		<item value="true" key="WizardProjectsImportPage.STORE_NESTED_PROJECTS"/>
+		<item value="true" key="WizardProjectsImportPage.STORE_COPY_PROJECT_ID"/>
+		<item value="true" key="WizardProjectsImportPage.STORE_ARCHIVE_SELECTED"/>
+		<list key="WizardProjectsImportPage.STORE_DIRECTORIES">
+			<item value=""/>
+		</list>
+		<list key="WizardProjectsImportPage.STORE_ARCHIVES">
+			<item value="C:\Users\WINDOWS\Downloads\NewVueLPCUsb.zip"/>
+			<item value="C:\Users\WINDOWS\Desktop\b78261905babe4aafb7ee2c0d680809a86096e28.zip"/>
+			<item value="E:\04_backup_source\FH310_V0101059_0315.zip"/>
+			<item value="E:\04_backup_source\lpcopen_2_20_lpcxpresso_nxp_lpcxpresso_4337.zip"/>
+			<item value="C:\Users\WINDOWS\Desktop\Portable_V00.00.00_TestVer2.zip"/>
+			<item value="E:\04_backup_source\Portable_V00.00.00_TestVer2.zip"/>
+		</list>
+	</section>
+	<section name="com.crt.quickstart.views.wizards.examples.QSExampleSelectionPage">
+		<item value="C:\Users\WINDOWS\Downloads" key="dirname"/>
+	</section>
+</section>

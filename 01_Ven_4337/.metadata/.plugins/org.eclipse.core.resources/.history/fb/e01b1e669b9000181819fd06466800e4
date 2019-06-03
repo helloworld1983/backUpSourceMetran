@@ -1,0 +1,62 @@
+#if defined (__USE_LPCOPEN)
+#if defined(NO_BOARD_LIB)
+#include "chip.h"
+#else
+#include "board.h"
+#endif
+#endif
+
+#include <cr_section_macros.h>
+#include "ProxyFlowSensor.h"
+
+#define SYSTEM_FRE_KHZ          (204)
+#define CYCLE_PER_INSTRUCTION   (4)
+#define INSTRUCTION_FRE_KHZ     (SYSTEM_FRE_KHZ/CYCLE_PER_INSTRUCTION)
+
+void delay_ms(unsigned long ms)
+{
+    for(unsigned long i = 0; i < ms; i++)
+    {
+        for(long j = 0; j < INSTRUCTION_FRE_KHZ; j++)
+            asm("nop"); //do nothing
+    }
+
+    return;
+}
+
+void delay_us(unsigned long us)
+{
+
+    for(unsigned long i = 0; i < us; i++)
+    {
+        for(long j = 0; j < INSTRUCTION_FRE_KHZ; j++)
+            asm("nop"); //do nothing
+    }
+
+    return;
+}
+
+
+int main(void) {
+
+#if defined (__USE_LPCOPEN)
+    // Read clock settings and update SystemCoreClock variable
+    SystemCoreClockUpdate();
+#if !defined(NO_BOARD_LIB)
+#if defined (__MULTICORE_MASTER) || defined (__MULTICORE_NONE)
+    // Set up and initialize all required blocks and
+    // functions related to the board hardware
+    Board_Init();
+#endif
+#endif
+#endif
+
+    ProxyFlowSensor::S_GetInstance()->Init();
+
+
+    while(1)
+    {
+        i++ ;
+    }
+    return 0 ;
+}

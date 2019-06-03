@@ -1,0 +1,25 @@
+09:11:40 **** Incremental Build of configuration Release for project USBV2 ****
+make -r all 
+Building file: ../src/libusbdev_desc.c
+Invoking: MCU C Compiler
+arm-none-eabi-gcc -D__MULTICORE_NONE -D__NEWLIB__ -DNDEBUG -D__CODE_RED -DCORE_M4 -D__USE_LPCOPEN -DCPP_USE_HEAP -D__LPC43XX__ -I"E:\myDrive\00_source_workspace\01_Ven_4337\USBV2\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lib_lpcspifilib\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_board_nxp_lpcxpresso_4337\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc\usbd" -Os -fno-common -g -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fsingle-precision-constant -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -mthumb -MMD -MP -MF"src/libusbdev_desc.d" -MT"src/libusbdev_desc.o" -MT"src/libusbdev_desc.d" -o "src/libusbdev_desc.o" "../src/libusbdev_desc.c"
+In file included from E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc\usbd/usbd_hw.h:29:0,
+                 from E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc\usbd/usbd_rom_api.h:35,
+                 from E:\myDrive\00_source_workspace\01_Ven_4337\USBV2\inc/app_usbd_cfg.h:6,
+                 from ../src/libusbdev_desc.c:1:
+E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc\usbd/usbd_core.h:508:39: error: 'USB_MAX_EP_NUM' undeclared here (not in a function)
+   USB_EP_HANDLER_T  ep_event_hdlr[2 * USB_MAX_EP_NUM];
+                                       ^
+E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc\usbd/usbd_core.h:512:33: error: 'USB_MAX_IF_NUM' undeclared here (not in a function)
+   USB_EP_HANDLER_T  ep0_hdlr_cb[USB_MAX_IF_NUM];
+                                 ^
+In file included from E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc\usbd/usbd_rom_api.h:37:0,
+                 from E:\myDrive\00_source_workspace\01_Ven_4337\USBV2\inc/app_usbd_cfg.h:6,
+                 from ../src/libusbdev_desc.c:1:
+E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc\usbd/usbd_mscuser.h:231:35: error: 'USB_HS_MAX_BULK_PACKET' undeclared here (not in a function)
+   /*ALIGNED(4)*/ uint8_t  BulkBuf[USB_HS_MAX_BULK_PACKET]; /* Bulk In/Out Buffer */
+                                   ^
+make: *** [src/libusbdev_desc.o] Error 1
+
+09:11:40 Build Finished (took 258ms)
+

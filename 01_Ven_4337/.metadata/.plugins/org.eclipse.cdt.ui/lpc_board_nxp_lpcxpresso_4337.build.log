@@ -1,0 +1,6 @@
+15:26:26 **** Incremental Build of configuration Release for project lpc_board_nxp_lpcxpresso_4337 ****
+make -r all 
+make: Nothing to be done for `all'.
+
+15:26:26 Build Finished (took 115ms)
+

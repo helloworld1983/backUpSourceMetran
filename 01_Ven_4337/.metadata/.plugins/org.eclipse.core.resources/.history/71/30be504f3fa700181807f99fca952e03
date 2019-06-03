@@ -1,0 +1,115 @@
+#if defined (__USE_LPCOPEN)
+#if defined(NO_BOARD_LIB)
+#include "chip.h"
+#else
+#include "board.h"
+#endif
+#endif
+
+//NXP includes
+#include <cr_section_macros.h>
+
+//freeRTOS includes
+#include "FreeRTOS.h"
+#include "task.h"
+
+//Utils includes
+#include <iostream> //must include to show debug on terminal(For C++)
+#include "DebugTrace.h"
+
+//Alarm includes
+#include "AlarmTask.h"
+
+//PD includes
+#include "PdTask.h"
+
+//ipc includes
+#include "IpcTask.h"
+
+#include "BdTask.h"
+
+#if defined (__MULTICORE_MASTER_SLAVE_M0APP) | defined (__MULTICORE_MASTER_SLAVE_M0SUB)
+#include "cr_start_m0.h"
+#endif
+
+/****************************************************************************************/
+//
+// Function name:   prvSetupHardware
+//
+// Details:  Init all neccesary hardware for each Task
+//
+// Arguments:   None
+//
+// ReturnValue : void
+//
+/****************************************************************************************/
+static void prvSetupHardware (void)
+{
+    IpcTask::S_GetInstance()->Init();
+    AlarmTask::S_GetInstance ()->Init ();
+    BdTask::S_GetInstance()->Init();
+
+}
+
+/****************************************************************************************/
+//
+// Function name:   main_tasks
+//
+// Details:  Create and run different tasks for controlling Portable system
+//
+// Arguments:   None
+//
+// ReturnValue : void
+//
+/****************************************************************************************/
+static void main_tasks (void)
+{
+    const int FOREVER = 1;
+    AlarmTask::S_GetInstance ()->AlarmCreateTask ();
+    PdTask::S_GetInstance ()->PDCreateTask ();
+    IpcTask::S_GetInstance()->IPCCreateTask();
+    BdTask::S_GetInstance()->BDCreateTask();
+
+    vTaskStartScheduler ();
+    //Control should never come here
+    DEBUG_MAIN("Schedule Failure\r\n");
+    while (FOREVER)
+    {
+    }
+}
+
+int main (void)
+{
+
+#if defined (__USE_LPCOPEN)
+    // Read clock settings and update SystemCoreClock variable
+    SystemCoreClockUpdate ();
+#if !defined(NO_BOARD_LIB)
+#if defined (__MULTICORE_MASTER) || defined (__MULTICORE_NONE)
+    // Set up and initialize all required blocks and
+    // functions related to the board hardware
+    Board_Init ();
+#endif
+#endif
+#endif
+
+    // Start M0APP slave processor
+#if defined (__MULTICORE_MASTER_SLAVE_M0APP)
+    cr_start_m0(SLAVE_M0APP,&__core_m0app_START__);
+#endif
+
+    // Start M0SUB slave processor
+#if defined (__MULTICORE_MASTER_SLAVE_M0SUB)
+    cr_start_m0(SLAVE_M0SUB,&__core_m0sub_START__);
+#endif
+
+    //initialize all task
+    prvSetupHardware ();
+    //go to boot loader
+
+    DEBUG_MAIN("System Start \n");
+    //run all task
+    main_tasks ();
+
+    return 0;
+}

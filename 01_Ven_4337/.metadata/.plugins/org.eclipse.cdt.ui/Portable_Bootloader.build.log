@@ -1,0 +1,6 @@
+09:05:03 **** Incremental Build of configuration Release for project Portable_Bootloader ****
+make -r all 
+make: Nothing to be done for `all'.
+
+09:05:03 Build Finished (took 210ms)
+

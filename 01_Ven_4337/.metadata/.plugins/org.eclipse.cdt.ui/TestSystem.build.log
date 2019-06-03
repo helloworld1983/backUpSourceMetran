@@ -1,0 +1,6 @@
+15:03:40 **** Incremental Build of configuration Release for project TestSystem ****
+make -r -j4 all 
+make: Nothing to be done for `all'.
+
+15:03:40 Build Finished (took 172ms)
+

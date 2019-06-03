@@ -1,0 +1,16 @@
+16:57:37 **** Incremental Build of configuration Release for project FreeRTOS9 ****
+make -r all 
+Building file: ../src/FreeRTOSCommonHooks.c
+Invoking: MCU C Compiler
+arm-none-eabi-gcc -DNDEBUG -D__CODE_RED -DCORE_M4 -D__USE_LPCOPEN -D__LPC43XX__ -D__NEWLIB__ -I"E:\myDrive\00_source_workspace\01_Ven_4337\FreeRTOS9\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_board_nxp_lpcxpresso_4337\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc\usbd" -Os -fno-common -g -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fsingle-precision-constant -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -mthumb -MMD -MP -MF"src/FreeRTOSCommonHooks.d" -MT"src/FreeRTOSCommonHooks.o" -MT"src/FreeRTOSCommonHooks.d" -o "src/FreeRTOSCommonHooks.o" "../src/FreeRTOSCommonHooks.c"
+In file included from E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc/chip.h:39:0,
+                 from E:\myDrive\00_source_workspace\01_Ven_4337\lpc_board_nxp_lpcxpresso_4337\inc/board.h:35,
+                 from E:\myDrive\00_source_workspace\01_Ven_4337\FreeRTOS9\inc/FreeRTOSConfig.h:59,
+                 from E:\myDrive\00_source_workspace\01_Ven_4337\FreeRTOS9\inc/FreeRTOS.h:98,
+                 from ../src/FreeRTOSCommonHooks.c:32:
+E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc/chip_lpc43xx.h:34:29: fatal error: spifilib_chiphw.h: No such file or directory
+compilation terminated.
+make: *** [src/FreeRTOSCommonHooks.o] Error 1
+
+16:57:38 Build Finished (took 271ms)
+

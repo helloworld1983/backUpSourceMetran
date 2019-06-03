@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="FlashDialog">
+		<item value="false" key="jtag"/>
+		<item value="true" key="program_pages"/>
+		<item value="false" key="erase"/>
+		<item value="false" key="program_all"/>
+		<item value="false" key="erase_pages"/>
+		<item value="true" key="logFLag"/>
+		<item value="," key="redlink_connect_script"/>
+		<item value="true" key="program"/>
+		<item value="LPC18x7_43x7_2x512_BootA.cfx," key="flashdriver"/>
+		<item value="false" key="clipboard"/>
+		<item value="" key="extended"/>
+		<item value="E:\myDrive\00_source_workspace\01_Ven_4337\TestDevices\Release\TestDevices.axf;E:\myDrive\00_source_workspace\01_Ven_4337\Vue\Release\Vue.axf;E:\myDrive\00_source_workspace\01_Ven_4337\USB\Release\USB.axf;E:\myDrive\00_source_workspace\01_Ven_4337\usbd_rom_libusb\Release\usbd_rom_libusb.axf," key="file"/>
+		<item value="true" key="erase_mass"/>
+		<item value="false" key="reopen"/>
+		<item value="false" key="repeat"/>
+		<item value="false" key="clipboard_exec"/>
+		<item value="true" key="exec"/>
+		<item value="" key="base"/>
+	</section>
+</section>

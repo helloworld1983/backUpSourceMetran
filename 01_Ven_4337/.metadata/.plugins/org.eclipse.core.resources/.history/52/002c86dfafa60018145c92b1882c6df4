@@ -1,0 +1,459 @@
+/******************************************************************************/
+//$COMMON.CPP$
+//   File Name:  NoGasMode.cpp
+//   Copyright 1997 Inventive Technologies,Inc. All Rights Reserved.
+//
+//   Purpose: 
+//      This file contains the definition of the No GasMode.   The No Gas
+//      Mode is entered in response to a total gas loss trigger.  It is 
+//      exited when the reset for the total gas loss occurs.
+//
+//   Interfaces:
+//      The ProcessResetGasLossTrigger() operation in this class calls 
+//      ModeMgr::ReturnToLastMode() to transition to the operator set mode or 
+//      the mode that was active when the NonVent mode was entered.
+//
+//      The Enter() and Exit() operations also interface with the TriggerMgr
+//      to enable/disable triggers.
+//
+//   Restrictions:
+//      There is only 1 instance of this class.
+/******************************************************************************/
+#include <ModeMgr.h>
+#include <PhaseMgr.h>
+#include "NoGasMode.h"
+#include "TriggerMgr.h"
+#include "O2Setting.h"
+#include "AlarmTask.h"
+#include "DebugTrace.h"
+
+// Initialize statics
+NoGasMode* NoGasMode::S_Instance = NULL;
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: S_GetInstance()
+//
+//    Processing:
+//      Since only 1 instance of this object should be created, any access
+//      to the object comes via this operation.  If any other object wants
+//      access to the NoGasMode object, it calls NoGasMode::S_GetInstance(),
+//      which returns a pointer to the NoGasMode object.
+//
+//      If the object has not already been created, this method instantiates
+//      it and returns a pointer to the object.  If the object has already been
+//      instantiated, a pointer to the object is returned.
+//
+//    Input Parameters:
+//      None
+//
+//    Output Parameters:
+//      None
+//
+//    Return Values:
+//      NoGasMode* - pointer to the object instantiated from this class
+//
+//    Pre-Conditions:
+//      None
+//
+//    Miscellaneous:
+//      None
+//
+//    Requirements:
+//
+/******************************************************************************/
+NoGasMode* NoGasMode::S_GetInstance (void)
+{
+    // If the object has not already been created, create it.
+    if(NULL == S_Instance)
+    {
+        S_Instance = new NoGasMode ();
+        ASSERTION(S_Instance != NULL);
+    }
+
+    return (S_Instance);
+
+}   // end S_GetInstance()
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: Enter()
+//
+//    Processing: 
+//      This operation is called when the total gas loss trigger fires.
+//      This operation calls the base class NonVentMode::Enter() operation.
+//      It also calls TriggerMgr::EnableTrigger() to enable triggers for this
+//      mode.  It interfaces with Alarms to update the Total Gas Loss alarm.
+//
+//      The Blower Spin Down State is updated if this is the first time that
+//      this mode has been entered (air source lost for first time).
+//
+//    Input Parameters:
+//      fromModeId - ID of the Mode that is being exited 
+//
+//    Output Parameters:
+//      None
+//
+//    Return Values:
+//      None
+//
+//    Pre-Conditions:
+//
+//    Miscellaneous:
+//      None
+//
+//    Requirements:  
+//
+/******************************************************************************/
+void NoGasMode::Enter (E_VentilationMode fromModeId)
+{
+    // Invoke the base class Enter() operation.  This must be done before
+    // enabling any triggers.
+    NonVenMode::Enter(fromModeId);
+
+    // Initialize pointer to the TriggerMgr
+    TriggerMgr* triggerMgrPtr = TriggerMgr::S_GetInstance ();
+
+    // Enable the reset gas loss trigger.
+    triggerMgrPtr->EnableTrigger (eResetGasLossTrigger);
+
+    // Enable the gas loss trigger.
+    triggerMgrPtr->EnableTrigger (eTotalGasLossTrigger);
+
+    // If there is a low O2 supply pressure condition, set the total gas loss 
+    // alarm to the active state.
+    if((O2Setting::S_GetInstance ())->O2SourceFault () == eTrue)
+    {
+        AlarmTask::S_GetInstance ()->SetIsActive (eGasSuppliesLost, eActive);
+    }
+
+    // If the blower has never been stopped, it indicates that this mode is
+    // being entered due to the loss of the air source for the first time.  
+    if(BlowerSpinDownState == eSpinDownNever)
+    {
+        // Enable the blower spindown time trigger.  Give the blower 30 seconds
+        // to spin down.
+//        triggerMgrPtr->EnableTrigger (eBlowerSpinDownTimeTrigger, (30 * TICKS_PER_SEC));
+        BlowerSpinDownState = eSpinDownActive;
+    }
+
+}   // end Enter()
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: Exit()
+//
+//    Processing: 
+//      This operation is called when the Reset Gas Loss Trigger Fires.  
+//      This operation calls the base class NonVentMode
+//      Exit() operation.  It also calls TriggerMgr::DisableTrigger()
+//      to disable the Total Gas Loss Reset Trigger.
+//
+//
+//    Input Parameters:
+//      None
+//
+//    Output Parameters:
+//      None
+//
+//    Return Values:
+//      None
+//
+//    Pre-Conditions:
+//      None
+//
+//    Miscellaneous:
+//      None
+//
+//    Requirements:  
+//
+/******************************************************************************/
+void NoGasMode::Exit (void)
+{
+    // Initialize pointer to the TriggerMgr
+    TriggerMgr* triggerMgrPtr = TriggerMgr::S_GetInstance ();
+
+    // Disable the gas loss triggers.
+    triggerMgrPtr->DisableTrigger (eResetGasLossTrigger);
+//    triggerMgrPtr->DisableTrigger (eBlowerSpinDownTimeTrigger);
+    triggerMgrPtr->EnableTrigger (eTotalGasLossTrigger);
+
+    // Update the alarm status to indicate that the total gas loss alarm is
+    // not active.
+    AlarmTask::S_GetInstance ()->SetIsActive (eGasSuppliesLost, eNotActive);
+
+
+    // Invoke the base class Exit() operation.  
+    NonVenMode::Exit ();
+
+}   // end Exit()
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: NoGasMode()
+//
+//    Processing: 
+//      This operation is the constructor for the Start-Up Mode.  It invokes the
+//      base class Mode constructor.
+//
+//    Input Parameters:
+//      None
+//
+//    Output Parameters:
+//      None
+//
+//    Return Values:
+//      None
+//
+//    Pre-Conditions:
+//      None
+//
+//    Miscellaneous:
+//      None
+//
+//    Requirements:  
+//
+/******************************************************************************/
+NoGasMode::NoGasMode (void) :
+        NonVenMode (eFalse), BlowerSpinDownState (eSpinDownNever)
+{
+
+}   // end NoGasMode()
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: ProcessResetGasLossTrigger()
+//
+//    Processing: 
+//      This operation is invoked when the ResetGasLossTrigger fires in the
+//      No Gas Mode.  This trigger fires when the low O2 supply pressure 
+//      condition auto-resets.  As long as the blower spin down is not active, 
+//      this routine calls ModeMgr::ReturnToLastMode() to transition out of the 
+//      Non-Vent mode and into either the operator set mode or the mode that was 
+//      active when the gas loss was detected.
+//
+//    Input Parameters:
+//      None
+//
+//    Output Parameters:
+//      None
+//
+//    Return Values:
+//      None
+//
+//    Pre-Conditions:
+//      None
+//
+//    Miscellaneous:
+//      None
+//
+//    Requirements:  
+//
+/******************************************************************************/
+void NoGasMode::ProcessResetGasLossTrigger (void)
+{
+    ModeMgr* modeMgrPtr;
+
+    // If the blower is not spinning down in response to an air source fault, 
+    // this mode can be exited and ventilation can continue using all O2.
+    if(BlowerSpinDownState != eSpinDownActive)
+    {
+        modeMgrPtr = ModeMgr::S_GetInstance ();
+        modeMgrPtr->ProcessAutoReset ();
+        ASSERTION((PhaseMgr::S_GetInstance())->GetCurrentPhaseId() == eAlarmPhase);
+        modeMgrPtr->ReturnToLastMode ();
+    }
+    else
+    {
+        // The O2 Supply pressure came back so remove the Total Gas Loss message.
+        // The temporary SVO condition to allow the blower time to spin down is
+        // still active.
+        AlarmTask::S_GetInstance ()->SetIsActive (eGasSuppliesLost, eNotActive);
+    }
+
+}   // end ProcessResetGasLossTrigger()
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: ProcessBlowerSpinDownTimeTrigger()
+//
+//    Processing: 
+//      This operation is invoked when the BlowerSpinDownTimeTrigger fires in 
+//      the No Gas Mode.  This timer expires when the blower has been given 
+//      enough time to come to a stop after the detection of an air source 
+//      fault.  As long as there is not also a low O2 pressure condition, 
+//      this routine calls ModeMgr::ReturnToLastMode() to transition 
+//      out of the No Gas mode and into either the operator set mode or the mode 
+//      that was active when the air source was lost.
+//
+//    Input Parameters:
+//      None
+//
+//    Output Parameters:
+//      None
+//
+//    Return Values:
+//      None
+//
+//    Pre-Conditions:
+//      None
+//
+//    Miscellaneous:
+//      None
+//
+//    Requirements:  
+//
+/******************************************************************************/
+void NoGasMode::ProcessBlowerSpinDownTimeTrigger (void)
+{
+    ModeMgr* modeMgrPtr;
+
+    // The blower has had time to spin down; update the state.
+    BlowerSpinDownState = eSpinDownComplete;
+
+    // If there is not a low O2 supply, then the ventilator can exit this mode
+    // and resume ventilation using all O2.
+    if((O2Setting::S_GetInstance ())->O2SourceFault () == eFalse)
+    {
+        modeMgrPtr = ModeMgr::S_GetInstance ();
+        modeMgrPtr->ProcessAutoReset ();
+        ASSERTION((PhaseMgr::S_GetInstance())->GetCurrentPhaseId() == eAlarmPhase);
+        modeMgrPtr->ReturnToLastMode ();
+    }
+
+}   // end ProcessBlowerSpinDownTimeTrigger()
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: UpdateAlarmStatus()
+//
+//    Processing: 
+//      This operation is invoked each time the UpdateStatus TimeTrigger fires.
+//      It updates the Total Gas Loss alarm status to indicate that the alarm
+//      is still active.
+//
+//    Input Parameters:
+//      None
+//
+//    Output Parameters:
+//      None
+//
+//    Return Values:
+//      None
+//
+//    Pre-Conditions:
+//      None
+//
+//    Miscellaneous:
+//      None
+//
+//    Requirements:  
+//
+/******************************************************************************/
+void NoGasMode::UpdateAlarmStatus (void)
+{
+    E_ReturnStatus status;
+    TriggerMgr* triggerMgrPtr;
+
+    // Make sure that there is an O2 source fault.  It is possible for the 
+    // ventilator to be in the SVO state temporarily while waiting for the
+    // blower to spin down.
+    if((O2Setting::S_GetInstance ())->O2SourceFault () == eTrue)
+    {
+        status = AlarmTask::S_GetInstance ()->SetIsActive (eGasSuppliesLost, eActive);
+
+
+        // If the status update was unsuccessful, reschedule the next update 
+        // for the short interval
+        if(status != eSuccess)
+        {
+            triggerMgrPtr = TriggerMgr::S_GetInstance ();
+            triggerMgrPtr->DisableTrigger (eUpdateStatusTimeTrigger);
+            triggerMgrPtr->EnableTrigger (eUpdateStatusTimeTrigger,
+                                          INIT_UPDATE_STAT_TIME);
+        }
+    }
+
+}  // end UpdateAlarmStatus()    
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: ProcessTotalGasLossTrigger()
+//
+//    Processing: 
+//      If the trigger fires while the No Gas mode is already active, it 
+//      indicates that the O2 supply pressure dropped out while the ventilator
+//      was in the SVO state waiting for the blower to spin down.  This 
+//      routine updates the Total Gas Loss Alarm status since both gas supplies
+//      are gone.
+//
+//    Input Parameters:
+//      None
+//
+//    Output Parameters:
+//      None
+//
+//    Return Values:
+//      None
+//
+//    Pre-Conditions:
+//      None
+//
+//    Miscellaneous:
+//      This operation is not expected to be called.
+//
+//    Requirements:  
+//
+/******************************************************************************/
+void NoGasMode::ProcessTotalGasLossTrigger (void)
+{
+    // The O2 Supply Pressure must have dropped if this trigger fires while the 
+    // mode is already active, so put up the total gas loss message.
+    AlarmTask::S_GetInstance ()->SetIsActive (eGasSuppliesLost, eActive);
+
+}   // end ProcessTotalGasLossTrigger()
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: ProcessTriggerID(E_TriggerId id)
+//
+//    Processing: Process action for each trigger ID of NO Gas Mode
+//
+//    Input Parameters:
+//      E_TriggerId id
+//
+//    Output Parameters:
+//      None
+//
+//    Return Values:
+//      None
+//
+//    Pre-Conditions:
+//      None
+//
+//    Miscellaneous:
+//
+//    Requirements:
+//
+/******************************************************************************/
+void NoGasMode::ProcessTriggerID (E_TriggerId id)
+{
+    switch (id)
+    {
+        case eTotalGasLossTrigger:
+            ProcessTotalGasLossTrigger();
+            break;
+
+        case eResetGasLossTrigger:
+            ProcessResetGasLossTrigger();
+            break;
+
+        case eBlowerSpinDownTimeTrigger:
+            ProcessBlowerSpinDownTimeTrigger();
+            break;
+
+        default:
+            ASSERTION(eFalse);
+            break;
+    }
+}

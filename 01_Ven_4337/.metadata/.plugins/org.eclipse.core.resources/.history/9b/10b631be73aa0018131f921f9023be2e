@@ -1,0 +1,568 @@
+/******************************************************************************/
+//
+//$COMMON.CPP$
+//	 File Name:	 AlarmTask.CPP
+//	 Copyright 1996	Inventive Technologies,Inc.	All	Rights Reserved.
+//
+//	 Purpose: 
+//		Semi-independent program segment with a	dedicated purpose of 
+//		processing alarm events.
+//
+//		The	Alarms Applications	Task (AlarmsTask).	The	task consists 
+//		of a polling loop that does	its	processing every 200 (ms).	
+//		The	Silence	Duration flag, the Silence Alarm flag, the Reset flag, 
+//		and	for	all	alarms the Status and Alarm	Elevation flag are checked.	
+//
+//	 Interfaces:
+//
+//	The	Alarms Application software	consists of	the	AnnunciationMgr, 
+//	AlarmStatus, AlarmElevation, and AlarmControls class categories.
+//
+//	The	AnnunciationMgr	class category is responsible for audibly and
+//	visually enunciating alarm status.	Annunciation includes updating
+//	the	ventilator status displays,	sounding the audible alarm and 
+//	displaying the alarm information on	the	GUI.  The Annunciation class
+//	category interfaces	with the Elevation class category, and the Devices 
+//	class category and the GUI in order	to accomplish its tasks.  
+//	The	Alarm Annunciation class category interfaces with the GUI class.
+//	Requirements regarding the display of alarm	statuses on	the	GUI	are	
+//	described in the GUI SRS.
+//
+//	The	AlarmStatus	and	Elevation class	categories are responsible for 
+//	performing alarm elevation and maintaining the status of each alarm	
+//	on the ventilator.	The	AlarmStatus	class category interfaces with 
+//	several	major class	categories including the BreathManagement class	
+//	(see Breath	Delivery SRS for more information),	the PdData class	
+//	(see Patient Data SRS),	and	the	Continuous Built-in	Test (CBIT)	class.
+//	It is the responsibility of	each application to	perform	the	detection 
+//	and	auto-reset of each of their	respective alarms.
+//	
+//	The	AlarmControls class	are	external events	that affect	the	annunciation
+//	of the alarms.	AlarmControls include the Alarm	Silence	and	the	Alarm 
+//	Reset requests that	can	affect alarm statuses.	The	Controls class 
+//	category interfaces	with the AnnunciationMgr and DataIO	class categories. 
+/******************************************************************************/
+
+// Include standard	project	definitions
+#include "CommonConstants.h"
+#include "CommonTypes.h"
+
+// Include Alarm task files
+#include "AlarmTask.h"
+#include "AlarmStat.h"
+#include "AlarmControl.h"
+#include "MgrAlarmStat.h"
+
+//freeRTOS includes
+#include "FreeRTOS.h"
+#include "task.h"
+
+//Utils includes
+#include "TaskCommon.h"
+#include "DebugTrace.h"
+#include "PdTask.h"
+AlarmTask* AlarmTask::S_Instance = NULL;
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: ClearAllAlarm
+//
+//    Processing: Clear all alarm
+//
+//    Input Parameters: None
+//
+//    Output Parameters: None
+//
+//    Return Values: None
+//
+//    Pre-conditions: None
+//
+//    Miscellaneous: None
+//
+//    Requirements: None
+//
+/******************************************************************************/
+void AlarmTask::ClearAllAlarm (void)
+{
+    MgrAlarmStat::S_GetInstance()->ClearAllAlarm();
+}
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: ClearHFOAlarm
+//
+//    Processing: Clear all alarm of HFO
+//
+//    Input Parameters: None
+//
+//    Output Parameters: None
+//
+//    Return Values: None
+//
+//    Pre-conditions: None
+//
+//    Miscellaneous: None
+//
+//    Requirements: None
+//
+/******************************************************************************/
+void AlarmTask::ClearHFOAlarm (void)
+{
+    MgrAlarmStat::S_GetInstance()->ClearHFOAlarm();
+}
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: ClearHFOAlarm
+//
+//    Processing: GetLevel (int alarmID)
+//
+//    Input Parameters: int alarmID
+//
+//    Output Parameters: None
+//
+//    Return Values: None
+//
+//    Pre-conditions: None
+//
+//    Miscellaneous: None
+//
+//    Requirements: None
+//
+/******************************************************************************/
+E_AlarmLevel AlarmTask::GetLevel (int alarmID)
+{
+    return MgrAlarmStat::S_GetInstance()->Alarm[ALARM_IDX(alarmID)]->GetLevel();
+}
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: AlarmTask
+//
+//    Processing: Constructor of AlarmTask class
+//
+//    Input Parameters: None
+//
+//    Output Parameters: None
+//
+//    Return Values: None
+//
+//    Pre-conditions: None
+//
+//    Miscellaneous: None
+//
+//    Requirements: None
+//
+/******************************************************************************/
+AlarmTask::AlarmTask(void)
+{
+
+}
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: SetResetFlag (E_Bool val)
+//
+//    Processing: Set reset flag
+//
+//    Input Parameters: E_Bool val
+//
+//    Output Parameters: None
+//
+//    Return Values: None
+//
+//    Pre-conditions: None
+//
+//    Miscellaneous: None
+//
+//    Requirements: None
+//
+/******************************************************************************/
+void AlarmTask::SetResetFlag (E_Bool val)
+{
+    AlarmControl::S_GetInstance()->SetResetFlag(val);
+}
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: S_GetInstance()
+//
+//    Processing:
+//      Since only 1 instance of this object should be created, any access
+//      to the object comes via this operation.  If any other object wants
+//      access to the object, it invokes S_GetInstance(),
+//      which returns a pointer to the object.
+//
+//      If the object has not already been created, this method instantiates
+//      it and returns a pointer to the object.  If the object has already been
+//      instantiated, a pointer to the object is returned.
+//
+//    Input Parameters:
+//      None
+//
+//    Output Parameters:
+//      None
+//
+//    Return Values:
+//      * - pointer to the object instantiated from this class
+//
+//    Pre-Conditions:
+//      None
+//
+//    Miscellaneous:
+//      None
+//
+//    Requirements:
+//
+/******************************************************************************/
+AlarmTask* AlarmTask::S_GetInstance(void)
+{
+    //Create object if it is null
+    if (S_Instance == NULL)
+    {
+        S_Instance = new AlarmTask();
+    }
+    //check object is null or not
+    ASSERTION(S_Instance != NULL);
+
+    return(S_Instance);
+}
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//	  Operation	Name: Init	  
+//
+//	  Processing: Initalizes global alarm objects used by other domains
+//
+//	  Input	Parameters:	None
+//
+//	  Output Parameters: None
+//
+//	  Return Values: None
+//
+//	  Pre-conditions: None
+//
+//	  Miscellaneous: None
+//
+//	  Requirements:	None	 
+//
+/******************************************************************************/
+void AlarmTask::Init(void)
+{
+    register int i;
+    MgrAlarmStat *alarmMgrTempPtr = MgrAlarmStat::S_GetInstance();
+
+    // initialize all alarms to some known value
+    for (i = 0; i < NUMALARMS; i++)
+    {
+        alarmMgrTempPtr->Alarm[i] = NULL;
+    }
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eUsingDefaultSettings)] = new AlarmStat (eUsingDefaultSettings, eHigh, eHigh, 0, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eSettingChange)] = new AlarmStat (eSettingChange, eLow, eLow, 0, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eCorruptCompliance)] = new AlarmStat (eCorruptCompliance, eHigh, eHigh, 0, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eCorruptAltitude)] = new AlarmStat (eCorruptAltitude, eHigh, eHigh, 0, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(ePrimaryAlarmFailure)] = new AlarmStat (ePrimaryAlarmFailure, eHigh, eHigh, 0, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eO2MotorLostCommunication)] = new AlarmStat (eO2MotorLostCommunication, eHigh, eHigh, 0, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eAirMotorLostCommunication)] = new AlarmStat (eAirMotorLostCommunication, eHigh, eHigh, 0, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eExhMotorLostCommunication)] = new AlarmStat (eExhMotorLostCommunication, eHigh, eHigh, 0, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eHFOMotorLostCommunication)] = new AlarmStat (eHFOMotorLostCommunication, eHigh, eHigh, 0, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eO2MotorError)] = new AlarmStat (eO2MotorError, eHigh, eHigh, 0, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eAirMotorError)] = new AlarmStat (eAirMotorError, eHigh, eHigh, 0, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eExhMotorError)] = new AlarmStat (eExhMotorError, eHigh, eHigh, 0, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eHFOMotorError)] = new AlarmStat (eHFOMotorError, eHigh, eHigh, 0, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eAirValveStuckClosed)] = new AlarmStat (eAirValveStuckClosed, eHigh, eHigh, 0, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eAirValveStuckOpen)] = new AlarmStat (eAirValveStuckOpen, eHigh, eHigh, 0, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eO2ValveStuckClosed)] = new AlarmStat (eO2ValveStuckClosed, eHigh, eHigh, 0, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eO2ValveStuckOpen)] = new AlarmStat (eO2ValveStuckOpen, eHigh, eHigh, 0, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eExhValveStuckClosed)] = new AlarmStat (eExhValveStuckClosed, eHigh, eHigh, 0, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eExhValveStuckOpen)] = new AlarmStat (eExhValveStuckOpen, eHigh, eHigh, 0, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eDaemonLostSignal)] = new AlarmStat (eDaemonLostSignal, eHigh, eHigh, 0, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eSpeakerError)] = new AlarmStat (eSpeakerError, eHigh, eHigh, 0, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eAirFlowSensorError)] = new AlarmStat (eAirFlowSensorError, eHigh, eHigh, 0, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eOxygenFlowsensorError)] = new AlarmStat (eOxygenFlowsensorError, eHigh, eHigh, 0, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eBadBatteryCurrentSensor)] = new AlarmStat (eBadBatteryCurrentSensor, eHigh, eHigh, 0, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eBadBatteryVoltageSensor)] = new AlarmStat (eBadBatteryVoltageSensor, eHigh, eHigh, 0, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eBadInternalTempSensor)] = new AlarmStat (eBadInternalTempSensor, eHigh, eHigh, 0, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eBadInternalO2Sensor)] = new AlarmStat (eBadInternalO2Sensor, eHigh, eHigh, 0, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eBadADCWrapAISensor)] = new AlarmStat (eBadADCWrapAISensor, eHigh, eHigh, 0, 0);
+
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eLowExternalBattery)] = new AlarmStat (eLowExternalBattery, eMedium, eMedium, 0, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eLowInternalBattery)] = new AlarmStat (eLowInternalBattery, eHigh, eHigh, 0, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(ePreviousPowerFailed)] = new AlarmStat (ePreviousPowerFailed, eHigh, eHigh, 0, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eWatchDogKickoutAlarm)] = new AlarmStat (eWatchDogKickoutAlarm, eHigh, eHigh, 0, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eHip)] = new AlarmStat (eHip, eMedium, eHigh, 0, 2);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eExtremeHip)] = new AlarmStat (eExtremeHip, eHigh, eHigh, 0, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eHighInspPressure)] = new AlarmStat (eHighInspPressure, eMedium, eHigh, ELEVATIONTIME, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eLowerLimitPressure)] = new AlarmStat (eLowerLimitPressure, eMedium, eHigh, 0, 4);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eLowInspPressure)] = new AlarmStat (eLowInspPressure, eMedium, eHigh, ELEVATIONTIME, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eOverLimitPressure)] = new AlarmStat (eOverLimitPressure, eMedium, eHigh, 0, 4);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eHighNCPAP)] = new AlarmStat (eHighNCPAP, eHigh, eHigh, 0, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eLowNCPAP)] = new AlarmStat (eLowNCPAP, eHigh, eHigh, 0, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eOcclusion)] = new AlarmStat (eOcclusion, eHigh, eHigh, 0, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eGasSuppliesLost)] = new AlarmStat (eGasSuppliesLost, eHigh, eHigh, 0, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eApnea)] = new AlarmStat (eApnea, eHigh, eHigh, 0, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eLowPeep)] = new AlarmStat (eLowPeep, eMedium, eHigh, ELEVATIONTIME, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eHighPeep)] = new AlarmStat (eHighPeep, eMedium, eHigh, ELEVATIONTIME, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eExtremeHighPeep)] = new AlarmStat (eExtremeHighPeep, eHigh, eHigh, 0, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eExtremeHigh_PHigh)] = new AlarmStat (eExtremeHigh_PHigh, eHigh, eHigh, 0, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eAPRVHigh_PHigh)] = new AlarmStat (eAPRVHigh_PHigh, eMedium, eHigh, 0, 2);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eAPRVLow_PHigh)] = new AlarmStat (eAPRVLow_PHigh, eMedium, eHigh, ELEVATIONTIME, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eAPRVHigh_PLow)] = new AlarmStat (eAPRVHigh_PLow, eMedium, eHigh, ELEVATIONTIME, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eAPRVLow_PLow)] = new AlarmStat (eAPRVLow_PLow, eMedium, eHigh, ELEVATIONTIME, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eLowVte)] = new AlarmStat (eLowVte, eMedium, eHigh, ELEVATIONTIME, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eHighVte)] = new AlarmStat (eHighVte, eMedium, eHigh, ELEVATIONTIME, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eAirSourceFault)] = new AlarmStat (eAirSourceFault, eHigh, eHigh, 0, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eLowO2Supply)] = new AlarmStat (eLowO2Supply, eHigh, eHigh, 0, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eLowAirSupply)] = new AlarmStat (eLowAirSupply, eHigh, eHigh, 0, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eUseO2Only)] = new AlarmStat (eUseO2Only,eHigh, eHigh, 0, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eUseAirOnly)] = new AlarmStat (eUseAirOnly,eHigh, eHigh, 0, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eHighO2)] = new AlarmStat (eHighO2, eHigh, eHigh, 0, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eLowO2)] = new AlarmStat (eLowO2, eHigh, eHigh, 0, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eHighRespiratoryRate)] = new AlarmStat (eHighRespiratoryRate, eMedium, eHigh, ELEVATIONTIME, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eLowMinuteVolume)] = new AlarmStat (eLowMinuteVolume, eMedium, eHigh, ELEVATIONTIME, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eHighMinuteVolume)] = new AlarmStat (eHighMinuteVolume, eMedium, eHigh, ELEVATIONTIME, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eLowVtSpontaneous)] = new AlarmStat (eLowVtSpontaneous, eMedium, eHigh, ELEVATIONTIME, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eLowVtMandatory)] = new AlarmStat (eLowVtMandatory, eMedium, eHigh, ELEVATIONTIME, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eITimeTooLong)] = new AlarmStat (eITimeTooLong, eMedium, eHigh, ELEVATIONTIME, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eHighEnclosureTemp)] = new AlarmStat (eHighEnclosureTemp, eHigh, eHigh, 0, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eHighInternalO2)] = new AlarmStat (eHighInternalO2, eHigh, eHigh, 0, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eBadFileSystem)] = new AlarmStat (eBadFileSystem, eHigh, eHigh, 0, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eDisconnectedCircuit)] = new AlarmStat (eDisconnectedCircuit, eHigh, eHigh, 0, 0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eOxygenCalibration)] = new AlarmStat (eOxygenCalibration, eLow, eLow, 0, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(e100percentO2Enable)] = new AlarmStat (e100percentO2Enable, eLow, eLow, 0, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eFanError)] = new AlarmStat (eFanError, eHigh, eHigh, 0, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eHFODoorOpen)] = new AlarmStat (eHFODoorOpen, eHigh, eHigh, 0, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eHFOPistonNotConnect)] = new AlarmStat (eHFOPistonNotConnect, eHigh, eHigh, 0, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eProxyDisconnect)] = new AlarmStat (eProxyDisconnect, eLow, eHigh, ELEVATIONTIME, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eDACLoopBackFailure)] = new AlarmStat (eDACLoopBackFailure, eHigh, eHigh, 0, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eInhPAutoZero)] = new AlarmStat (eInhPAutoZero, eMedium, eHigh, 0, 2);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eExhPAutoZero)] = new AlarmStat (eExhPAutoZero, eMedium, eHigh, ELEVATIONTIME, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eFrontPanelDisconnect)] = new AlarmStat (eFrontPanelDisconnect, eMedium, eHigh, ELEVATIONTIME, 0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eProximalLeakage)] = new AlarmStat(eProximalLeakage, eMedium, eHigh, ELEVATIONTIME,0);
+
+#ifdef HFO_SYSTEM
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eHighMAP)] = new AlarmStat(eHighMAP, eHigh, eHigh, 0,0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eExtremeHighMAP)] = new AlarmStat(eExtremeHighMAP, eHigh, eHigh, 0,0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eAbnormalMAP)] = new AlarmStat(eAbnormalMAP, eHigh, eHigh, 0,0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eLowMAP)] = new AlarmStat(eLowMAP, eHigh, eHigh, 0,0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eExtremeLowMAP)] = new AlarmStat(eExtremeLowMAP, eHigh, eHigh, 0,0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eHighAmplitude)] = new AlarmStat(eHighAmplitude, eHigh, eHigh, 0,0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eLowAmplitude)] = new AlarmStat(eLowAmplitude, eHigh, eHigh, 0,0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eETTubeDisconnect)] = new AlarmStat(eETTubeDisconnect, eHigh, eHigh, 0,0);
+
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eLowSIPress)] = new AlarmStat(eLowSIPress, eHigh, eHigh, 0,0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eHighSIPress)] = new AlarmStat(eHighSIPress, eHigh, eHigh, 0,0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eExtremeHighSIPress)] = new AlarmStat(eExtremeHighSIPress, eHigh, eHigh, 0,0);
+    alarmMgrTempPtr->Alarm[ALARM_IDX(eCircuitLeakInHFO)] = new AlarmStat(eCircuitLeakInHFO, eHigh, eHigh, 0,0);
+#endif
+
+    // check for "new" failures
+    for (i = 0; i < NUMALARMS; i++)
+    {
+        ASSERTION(alarmMgrTempPtr->Alarm[i] != NULL);
+    }
+    DEBUG_ALARM("Initialize %d alarm\n", NUMALARMS);
+}
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: AlAlarmCreateTask
+//
+//    Processing: Create alarms task
+//
+//    Input Parameters: None
+//
+//    Output Parameters: None
+//
+//    Return Values: None
+//
+//    Pre-conditions: None
+//
+//    Miscellaneous: None
+//
+//    Requirements: None
+//
+/******************************************************************************/
+void AlarmTask::AlarmCreateTask (void)
+{
+    xTaskCreate(Entry, "AlarmTask", ALARM_TASK_SIZE,
+                NULL, TASK_PRIO_ALARM_TASK, (TaskHandle_t *) NULL);
+}
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//	  Operation	Name: AlarmTask::Entry	 
+//
+//	  Processing:
+//		The	Alarms Applications	Task (AlarmsTask).	The	task consists 
+//		of a polling loop that does	its	processing every 20 (ms).
+//		The	Silence	Duration flag, the Silence Alarm flag, the Reset flag, 
+//		and	for	all	alarms the Status and Alarm	Elevation flag are checked.	 
+//
+//	  Input	Parameters:	None
+//
+//	  Output Parameters: None
+//
+//	  Return Values: None
+//
+//	  Pre-conditions: None
+//
+//	  Miscellaneous: None
+//
+//	  Requirements:	None	 
+//
+/******************************************************************************/
+void AlarmTask::Entry(void* pvParameters)
+{ 
+    const int FOREVER =	1;
+
+    MgrAlarmStat *alarmMgrPtr;
+    AlarmControl *controlPtr;
+
+    // Instantiate watch dog monitor
+
+    // application initialization
+
+    alarmMgrPtr = MgrAlarmStat::S_GetInstance();
+    ASSERTION (alarmMgrPtr != NULL);
+
+    controlPtr = AlarmControl::S_GetInstance();
+    ASSERTION (controlPtr != NULL);static bool test = true;
+
+    while(FOREVER)
+    {
+        DEBUG_ALARM("Alarm task \n");
+
+        if(test)PdTask::S_GetInstance()->S_SetEventFlag(APRV_PHIGH_START);
+        else PdTask::S_GetInstance()->S_SetEventFlag(UPDATE_APRV_BR_FLAG);
+        test = ~test;
+        //start monitoring task
+        //monPtr->MonitorBegin();
+
+        // check alarm silence flag
+//        if (controlPtr->GetSilenceFlag())
+//        {
+//            controlPtr->SetSilenceFlag(eFalse);
+//            alarmMgrPtr->DoSilence();
+//        }
+
+        // check reset alarm flag
+//        if (controlPtr->GetResetFlag())
+//        {
+//            controlPtr->SetResetFlag(eFalse);
+//            alarmMgrPtr->DoReset();
+//        }
+
+
+        // check for alarm status changes
+//        alarmMgrPtr->StatusUpdate();
+
+        //end monitoring task
+//        monPtr->MonitorEnd();
+
+        vTaskDelay(ALARM_TASK_DELAY_TIME);  //delay 20 ms
+
+    } // while (FOREVER) ....
+
+
+} // Entry 
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: SetIsActive
+//
+//    Processing: Set the IsActive flag
+//
+//    Input Parameters: None
+//
+//    Output Parameters: None
+//
+//    Return Values:
+//
+//                   eSuccess if the Alarms task can process call
+//                   eFail if the Alarm's task is busy request ignored
+//
+//    Pre-conditions: None
+//
+//    Miscellaneous: None
+//
+//    Requirements: calls to this function should be no faster than the
+//                  Alarms task runs which is 20 ms.
+//
+/******************************************************************************/
+E_ReturnStatus AlarmTask::SetIsActive (int alarmID, E_AlarmStatus stat)
+{
+    return MgrAlarmStat::S_GetInstance()->Alarm[ALARM_IDX(alarmID)]->SetIsActive(stat);
+}
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: SetIsActive
+//
+//    Processing: Get the IsActive flag
+//
+//    Input Parameters: None
+//
+//    Output Parameters: None
+//
+//    Return Values:
+//
+//                   eSuccess if the Alarms task can process call
+//                   eFail if the Alarm's task is busy request ignored
+//
+//    Pre-conditions: None
+//
+//    Miscellaneous: None
+//
+//    Requirements: calls to this function should be no faster than the
+//                  Alarms task runs which is 20 ms.
+//
+/******************************************************************************/
+E_AlarmStatus AlarmTask::GetIsActive (int alarmID)
+{
+    return MgrAlarmStat::S_GetInstance()->Alarm[ALARM_IDX(alarmID)]->GetIsActive();
+}

@@ -1,0 +1,20 @@
+<#global skipCompare=true> 
+
+<#if memory.alias=="Flash2">
+        *Bootloader/*(.rodata*)
+        *fatfs/*(.rodata*)
+        *lpcusblib/*(.rodata*)
+        *lib_lpcspifilib/*(.rodata*)
+        *lpc_board_ea_oem_4357/*(.rodata*)
+        *lpc_chip_43xx/*(.rodata*)
+        *flashbankdata/*(.rodata*)                        
+</#if>
+    	*(.rodata.$${memory.alias}*)
+    	*(.rodata.$${memory.name}*)
+
+<#if memory.alias=="Flash3">
+        *spifidataBoot/*(.rodata*)
+                        
+</#if>
+    	*(.rodata.$${memory.alias}*)
+    	*(.rodata.$${memory.name}*)

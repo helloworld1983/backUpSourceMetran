@@ -1,0 +1,49 @@
+16:39:00 **** Incremental Build of configuration Release for project test ****
+make -r all 
+Building file: ../src/cr_cpp_config.cpp
+Invoking: MCU C++ Compiler
+arm-none-eabi-c++ -D__MULTICORE_NONE -D__NEWLIB__ -DNDEBUG -D__CODE_RED -DCORE_M4 -D__USE_LPCOPEN -DCPP_USE_HEAP -D__LPC43XX__ -I"E:\myDrive\00_source_workspace\01_Ven_4337\test\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lib_lpcspifilib\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_board_nxp_lpcxpresso_4337\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc\usbd" -Os -fno-common -Os -g -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions -fsingle-precision-constant -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -mthumb -MMD -MP -MF"src/cr_cpp_config.d" -MT"src/cr_cpp_config.o" -MT"src/cr_cpp_config.d" -o "src/cr_cpp_config.o" "../src/cr_cpp_config.cpp"
+Finished building: ../src/cr_cpp_config.cpp
+ 
+Building file: ../src/cr_startup_lpc43xx.cpp
+Invoking: MCU C++ Compiler
+arm-none-eabi-c++ -D__MULTICORE_NONE -D__NEWLIB__ -DNDEBUG -D__CODE_RED -DCORE_M4 -D__USE_LPCOPEN -DCPP_USE_HEAP -D__LPC43XX__ -I"E:\myDrive\00_source_workspace\01_Ven_4337\test\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lib_lpcspifilib\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_board_nxp_lpcxpresso_4337\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc\usbd" -Os -fno-common -Os -g -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions -fsingle-precision-constant -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -mthumb -MMD -MP -MF"src/cr_startup_lpc43xx.d" -MT"src/cr_startup_lpc43xx.o" -MT"src/cr_startup_lpc43xx.d" -o "src/cr_startup_lpc43xx.o" "../src/cr_startup_lpc43xx.cpp"
+Finished building: ../src/cr_startup_lpc43xx.cpp
+ 
+Building file: ../src/crp.c
+Invoking: MCU C Compiler
+arm-none-eabi-gcc -D__MULTICORE_NONE -D__NEWLIB__ -DNDEBUG -D__CODE_RED -DCORE_M4 -D__USE_LPCOPEN -DCPP_USE_HEAP -D__LPC43XX__ -I"E:\myDrive\00_source_workspace\01_Ven_4337\test\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lib_lpcspifilib\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_board_nxp_lpcxpresso_4337\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc\usbd" -Os -fno-common -g -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fsingle-precision-constant -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -mthumb -MMD -MP -MF"src/crp.d" -MT"src/crp.o" -MT"src/crp.d" -o "src/crp.o" "../src/crp.c"
+Finished building: ../src/crp.c
+ 
+Building file: ../src/sysinit.c
+Invoking: MCU C Compiler
+arm-none-eabi-gcc -D__MULTICORE_NONE -D__NEWLIB__ -DNDEBUG -D__CODE_RED -DCORE_M4 -D__USE_LPCOPEN -DCPP_USE_HEAP -D__LPC43XX__ -I"E:\myDrive\00_source_workspace\01_Ven_4337\test\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lib_lpcspifilib\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_board_nxp_lpcxpresso_4337\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc\usbd" -Os -fno-common -g -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fsingle-precision-constant -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -mthumb -MMD -MP -MF"src/sysinit.d" -MT"src/sysinit.o" -MT"src/sysinit.d" -o "src/sysinit.o" "../src/sysinit.c"
+Finished building: ../src/sysinit.c
+ 
+Building file: ../src/test.cpp
+Invoking: MCU C++ Compiler
+arm-none-eabi-c++ -D__MULTICORE_NONE -D__NEWLIB__ -DNDEBUG -D__CODE_RED -DCORE_M4 -D__USE_LPCOPEN -DCPP_USE_HEAP -D__LPC43XX__ -I"E:\myDrive\00_source_workspace\01_Ven_4337\test\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lib_lpcspifilib\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_board_nxp_lpcxpresso_4337\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc\usbd" -Os -fno-common -Os -g -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions -fsingle-precision-constant -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -mthumb -MMD -MP -MF"src/test.d" -MT"src/test.o" -MT"src/test.d" -o "src/test.o" "../src/test.cpp"
+Finished building: ../src/test.cpp
+ 
+Building target: test.axf
+Invoking: MCU C++ Linker
+arm-none-eabi-c++ -nostdlib -L"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_board_nxp_lpcxpresso_4337\Release" -L"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\Release" -Xlinker -Map="test.map" -Xlinker --gc-sections -Xlinker -print-memory-usage -mcpu=cortex-m4 -mthumb -T "test_Release.ld" -o "test.axf"  ./src/cr_cpp_config.o ./src/cr_startup_lpc43xx.o ./src/crp.o ./src/sysinit.o ./src/test.o   -llpc_board_nxp_lpcxpresso_4337 -llpc_chip_43xx
+Memory region         Used Size  Region Size  %age Used
+      MFlashA512:       34948 B       512 KB      6.67%
+      MFlashB512:          0 GB       512 KB      0.00%
+        RamLoc32:        2308 B        32 KB      7.04%
+        RamLoc40:          0 GB        40 KB      0.00%
+        RamAHB32:          0 GB        32 KB      0.00%
+        RamAHB16:          0 GB        16 KB      0.00%
+    RamAHB_ETB16:          0 GB        16 KB      0.00%
+Finished building target: test.axf
+ 
+/bin/make --no-print-directory post-build
+Performing post-build steps
+arm-none-eabi-size "test.axf"; # arm-none-eabi-objcopy -v -O binary "test.axf" "test.bin" ; # checksum -p LPC4337 -d "test.bin";
+   text	   data	    bss	    dec	    hex	filename
+  32744	   2204	    104	  35052	   88ec	test.axf
+ 
+
+16:39:02 Build Finished (took 1s.604ms)
+

@@ -1,0 +1,38 @@
+16:40:08 **** Incremental Build of configuration Release for project FreeRTOSV9 ****
+make -r -j4 all 
+Building file: ../src/FreeRTOSCommonHooks.c
+Building file: ../src/croutine.c
+Building file: ../src/event_groups.c
+Building file: ../src/heap_3.c
+Invoking: MCU C Compiler
+Invoking: MCU C Compiler
+arm-none-eabi-gcc -D__REDLIB__ -D__MULTICORE_NONE -DNDEBUG -D__CODE_RED -DCORE_M4 -D__LPC43XX__ -I"E:\myDrive\00_source_workspace\01_Ven_4337\FreeRTOSV9\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc\usbd" -Os -fno-common -g -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fsingle-precision-constant -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -mthumb -specs=redlib.specs -MMD -MP -MF"src/FreeRTOSCommonHooks.d" -MT"src/FreeRTOSCommonHooks.o" -MT"src/FreeRTOSCommonHooks.d" -o "src/FreeRTOSCommonHooks.o" "../src/FreeRTOSCommonHooks.c"
+Invoking: MCU C Compiler
+arm-none-eabi-gcc -D__REDLIB__ -D__MULTICORE_NONE -DNDEBUG -D__CODE_RED -DCORE_M4 -D__LPC43XX__ -I"E:\myDrive\00_source_workspace\01_Ven_4337\FreeRTOSV9\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc\usbd" -Os -fno-common -g -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fsingle-precision-constant -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -mthumb -specs=redlib.specs -MMD -MP -MF"src/croutine.d" -MT"src/croutine.o" -MT"src/croutine.d" -o "src/croutine.o" "../src/croutine.c"
+arm-none-eabi-gcc -D__REDLIB__ -D__MULTICORE_NONE -DNDEBUG -D__CODE_RED -DCORE_M4 -D__LPC43XX__ -I"E:\myDrive\00_source_workspace\01_Ven_4337\FreeRTOSV9\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc\usbd" -Os -fno-common -g -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fsingle-precision-constant -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -mthumb -specs=redlib.specs -MMD -MP -MF"src/event_groups.d" -MT"src/event_groups.o" -MT"src/event_groups.d" -o "src/event_groups.o" "../src/event_groups.c"
+Invoking: MCU C Compiler
+arm-none-eabi-gcc -D__REDLIB__ -D__MULTICORE_NONE -DNDEBUG -D__CODE_RED -DCORE_M4 -D__LPC43XX__ -I"E:\myDrive\00_source_workspace\01_Ven_4337\FreeRTOSV9\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc" -I"E:\myDrive\00_source_workspace\01_Ven_4337\lpc_chip_43xx\inc\usbd" -Os -fno-common -g -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fsingle-precision-constant -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -mthumb -specs=redlib.specs -MMD -MP -MF"src/heap_3.d" -MT"src/heap_3.o" -MT"src/heap_3.d" -o "src/heap_3.o" "../src/heap_3.c"
+In file included from E:\myDrive\00_source_workspace\01_Ven_4337\FreeRTOSV9\inc/FreeRTOS.h:98:0,
+                 from ../src/FreeRTOSCommonHooks.c:32:
+E:\myDrive\00_source_workspace\01_Ven_4337\FreeRTOSV9\inc/FreeRTOSConfig.h:59:19: fatal error: board.h: No such file or directory
+compilation terminated.
+In file included from E:\myDrive\00_source_workspace\01_Ven_4337\FreeRTOSV9\inc/FreeRTOS.h:98:0,
+                 from ../src/croutine.c:70:
+E:\myDrive\00_source_workspace\01_Ven_4337\FreeRTOSV9\inc/FreeRTOSConfig.h:59:19: fatal error: board.h: No such file or directory
+compilation terminated.
+make: *** [src/croutine.o] Error 1
+make: *** Waiting for unfinished jobs....
+make: *** [src/FreeRTOSCommonHooks.o] Error 1
+In file included from E:\myDrive\00_source_workspace\01_Ven_4337\FreeRTOSV9\inc/FreeRTOS.h:98:0,
+                 from ../src/event_groups.c:79:
+E:\myDrive\00_source_workspace\01_Ven_4337\FreeRTOSV9\inc/FreeRTOSConfig.h:59:19: fatal error: board.h: No such file or directory
+compilation terminated.
+make: *** [src/event_groups.o] Error 1
+In file included from E:\myDrive\00_source_workspace\01_Ven_4337\FreeRTOSV9\inc/FreeRTOS.h:98:0,
+                 from ../src/heap_3.c:85:
+E:\myDrive\00_source_workspace\01_Ven_4337\FreeRTOSV9\inc/FreeRTOSConfig.h:59:19: fatal error: board.h: No such file or directory
+compilation terminated.
+make: *** [src/heap_3.o] Error 1
+
+16:40:09 Build Finished (took 402ms)
+

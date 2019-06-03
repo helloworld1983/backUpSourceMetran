@@ -1,0 +1,811 @@
+/******************************************************************************/
+//$COMMON.CPP$
+//   File Name:  BdTask.cpp
+//   Copyright 1997 Inventive Technologies,Inc. All Rights Reserved.
+//
+//   Purpose: This file contains the BdTask class, which defines the
+//      BdTask entry point.  This class is derived from the Nucleus Plus
+//      RTOS Task class.
+//
+//   Interfaces:
+//      The BD Task entry point interfaces with RTOS kernel services to 
+//      receive messages on the BD Queue. 
+//
+//      The BD Task entry point is also responsible for instantiating
+//      many of the Breath Delivery Application objects.  It does this
+//      by invoking the S_GetInstance() operation for classes that have
+//      only 1 instance such as the TriggerMgr, PhaseMgr and ModeMgr.  It
+//      also instantiates the BD Queue and the BD Timer.
+//
+//      In its main loop, the BD Task Entry() invokes the ProcessBdCycle()
+//      operation of the MgrBreathData, TriggerMgr and PhaseMgr objects each
+//      time the BD Timer expires.
+//
+//      The remaining operations in this class are overloaded versions of the
+//      Send() operation.  Send() is a public operation invoked by tasks
+//      other than the BD Task to place events on the BD Task's Queue.  Send()
+//      in turn calls the RTOS kernel service Send() to place the message on
+//      the queue.
+//
+//   Restrictions:
+//      There is only 1 instance of this class.
+/******************************************************************************/
+#include "BdTask.h"
+#include "BdInterface.h"
+#include "ModeMgr.h"
+#include "PhaseMgr.h"
+#include "TriggerMgr.h"
+#include "MgrBdSetting.h"
+#include "MgrOpRequest.h"
+#include "MgrBreathData.h"
+#include "GuiMsgMgr.h"
+#include "O2Setting.h"
+#include "Btps.h"
+#include "AlarmTask.h"
+#include "PdTask.h"
+#include "TaskCommon.h"
+
+#include "FreeRTOS.h"
+
+#include "task.h"
+
+
+//  Define Statics
+BdTask* BdTask::S_Instance = NULL;
+Q* BdTask::BDQueuePtr = NULL;
+
+BdQEntry BdTask::bdQEntry =
+{ eNoBdEventId };
+
+static E_Bool StartTimedEvent = eFalse;
+//******************************************************************************
+//$COMMON.OPERATION$
+//    Operation Name: Send()
+//
+//    Processing: 
+//      This operation is invoked from DataIO whenever the status of one of 
+//      the inputs that the BD Task has registered to monitor changes.  For
+//      example, the BD Task is registered to receive notification when the
+//      manual inhalation key is pressed.
+//
+//    Input Parameters:
+//      id - device ID for the input that has changed state
+//
+//    Output Parameters:
+//      None
+//
+//    Return Values:
+//      eSuccess.  Error handling is done within the routine
+//
+//    Pre-Conditions:
+//      None
+//
+//    Miscellaneous:
+//      If this operation is invoked with an id for an input that the BD Task
+//      is not expecting to receive, error handling is performed.
+//
+//    Requirements:  
+//
+//******************************************************************************
+E_ReturnStatus BdTask::Send (E_DeviceId id)
+{
+    // entry for the BD Queue
+    BdQEntry bdQEntry;
+    // RTOS return status
+    STATUS status;
+    E_Bool sendToBd = eTrue;
+
+    switch (id)
+    {
+        case eManInspKey:
+            bdQEntry.Event.OpRequestEvent.Id = eManualInhId;
+            bdQEntry.Event.OpRequestEvent.Command = eStart;
+            break;
+#ifdef HFO_SYSTEM
+        case eManHoldInspKeyDown:
+            bdQEntry.Event.OpRequestEvent.Id = eManualHoldId;
+            bdQEntry.Event.OpRequestEvent.Command = eStart;
+            //        emit manualButtonPress(true);
+            break;
+
+        case eManHoldInspKeyUp:
+            bdQEntry.Event.OpRequestEvent.Id = eManualHoldId;
+            bdQEntry.Event.OpRequestEvent.Command = eStop;
+            //        emit manualButtonPress(false);
+            break;
+
+        case eAutoSIOn:
+            bdQEntry.Event.OpRequestEvent.Id = eManualHoldId;
+            bdQEntry.Event.OpRequestEvent.Command = eAutoStart;
+            //        emit manualButtonPress(true);
+            break;
+
+        case eAutoSIOff:
+            bdQEntry.Event.OpRequestEvent.Id = eManualHoldId;
+            bdQEntry.Event.OpRequestEvent.Command = eAutoStop;
+            //        emit manualButtonPress(false);
+            break;
+#endif
+        case eAlarmResetKey:
+            //        qDebug()<<"eAlarmResetKey===========================";
+            bdQEntry.Event.OpRequestEvent.Id = eAlarmResetId;
+            bdQEntry.Event.OpRequestEvent.Command = eStart;
+            break;
+
+        case eOilPumpRequestKey:
+            //        qDebug()<<"eOilPumpRequestKey===========================";
+            bdQEntry.Event.OpRequestEvent.Id = eStartOilPumpId;
+            bdQEntry.Event.OpRequestEvent.Command = eStart;
+            break;
+
+        case eO2Pressure:
+            //             Return of the oxygen supply pressure
+            (O2Setting::S_GetInstance ())->SetO2PressSwitchFault (eFalse);
+            //             Nothing to send to the BD Task
+            sendToBd = eFalse;
+            break;
+
+        case eO2PressureOff:
+            //             Notify the O2Setting of the loss of oxygen
+            (O2Setting::S_GetInstance ())->SetO2PressSwitchFault (eTrue);
+
+            //             Nothing to send to the BD Task
+            sendToBd = eFalse;
+            break;
+        case e100PercentO2:
+            O2Setting::S_GetInstance ()->Set100PercentO2 (eTrue);
+
+            //        bdQEntry.Event.OpRequestEvent.Id = e100PercentO2Id;
+            //        bdQEntry.Event.OpRequestEvent.Command = eStart;
+            if(AlarmTask::S_GetInstance ()->GetIsActive (e100percentO2Enable)
+                    == eNotActive)
+            {
+                AlarmTask::S_GetInstance ()->SetIsActive (e100percentO2Enable,
+                                                          eActive);
+            }
+
+            sendToBd = eFalse;
+            break;
+        case e100PercentO2Off:
+            O2Setting::S_GetInstance ()->Set100PercentO2 (eFalse);
+
+            //        bdQEntry.Event.OpRequestEvent.Id = e100PercentO2Id;
+            //        bdQEntry.Event.OpRequestEvent.Command = eStop;
+            sendToBd = eFalse;
+            if(AlarmTask::S_GetInstance ()->GetIsActive (e100percentO2Enable)
+                    == eActive)
+            {
+                AlarmTask::S_GetInstance ()->SetIsActive (e100percentO2Enable,
+                                                          eNotActive);
+            }
+        case eAirPressure:
+            // Clear alarm for all system.
+            AlarmTask::S_GetInstance ()->SetIsActive (eLowAirSupply,
+                                                      eNotActive);
+            // Return of the Air wall supply pressure, turn off blower
+            (O2Setting::S_GetInstance ())->SetAirPressSwitchFault (eFalse);
+
+            //             Nothing to send to the BD Task
+            sendToBd = eFalse;
+            break;
+
+        case eAirPressureOff:
+
+            (O2Setting::S_GetInstance ())->SetAirPressSwitchFault (eTrue);
+            // Set the alarm for all system.
+            AlarmTask::S_GetInstance ()->SetIsActive (eLowAirSupply, eActive);
+
+            //             Nothing to send to the BD Task
+            sendToBd = eFalse;
+            break;
+#ifdef HFO_SYSTEM
+        case eSuspendAutoSetRequest:
+            bdQEntry.Event.OpRequestEvent.Id = eDoAutoSetId;
+            bdQEntry.Event.OpRequestEvent.Command = eSuspend;
+            break;
+        case eDoAutoSetRequest:
+            bdQEntry.Event.OpRequestEvent.Id = eDoAutoSetId;
+            bdQEntry.Event.OpRequestEvent.Command = eStart;
+            break;
+        case eStopAutoSetRequest:
+            bdQEntry.Event.OpRequestEvent.Id = eDoAutoSetId;
+            bdQEntry.Event.OpRequestEvent.Command = eStop;
+            break;
+
+        case eAmpChangeRequest:
+            bdQEntry.Event.OpRequestEvent.Id = eDoAutoSetId;
+            bdQEntry.Event.OpRequestEvent.Command = eAmpChange;
+            break;
+        case eSVChangeRequest:
+            bdQEntry.Event.OpRequestEvent.Id = eDoAutoSetId;
+            bdQEntry.Event.OpRequestEvent.Command = eStrokVolumeChange;
+            break;
+        case eFreqChangeRequest:
+            bdQEntry.Event.OpRequestEvent.Id = eDoAutoSetId;
+            bdQEntry.Event.OpRequestEvent.Command = eFreqChange;
+            break;
+        case eMapChangeRequest:
+            bdQEntry.Event.OpRequestEvent.Id = eDoAutoSetId;
+            bdQEntry.Event.OpRequestEvent.Command = eMapChange;
+            break;
+#endif
+        case eShutdownRequestKey:
+            bdQEntry.Event.OpRequestEvent.Id = eShutdownRequestId;
+            bdQEntry.Event.OpRequestEvent.Command = eStart;
+            break;
+
+        default:
+            break;
+
+    }   // end switch
+
+    // Send the operator request to the BdTask
+    if(eTrue == sendToBd)
+    {
+        status = Send (bdQEntry.Event.OpRequestEvent);
+        ASSERTION(status == NU_SUCCESS);
+    }
+
+    return (eSuccess);
+}   // end Send()
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: Init
+//
+//    Processing: Initalizes global alarm objects used by other domains
+//
+//    Input Parameters: None
+//
+//    Output Parameters: None
+//
+//    Return Values: None
+//
+//    Pre-conditions: None
+//
+//    Miscellaneous: None
+//
+//    Requirements: None
+//
+/******************************************************************************/
+void BdTask::Init (void)
+{
+}
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: BDCreateTask
+//
+//    Processing: Create BD task
+//
+//    Input Parameters: None
+//
+//    Output Parameters: None
+//
+//    Return Values: None
+//
+//    Pre-conditions: None
+//
+//    Miscellaneous: None
+//
+//    Requirements: None
+//
+/******************************************************************************/
+void BdTask::BDCreateTask (void)
+{
+    xTaskCreate (Entry, "BDTask", BD_TASK_SIZE,
+                 NULL, TASK_PRIO_BD_TASK, (TaskHandle_t *) NULL);
+}
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: BdTask()
+//
+//    Processing: 
+//      This operation is the BD Task constructor.  It invokes the base
+//      Task class constructor.  The BD task is a preemptable task.  The BD Task 
+//      is designed to run at a priority higher than the Patient Data Task, 
+//      the GUI Task and the Alarm Task.  It is designed to run at a lower 
+//      priority than the Flow and Pressure Controller Tasks.
+//
+//      This operation creates the BD queue and instantiates objects that
+//      are part of the BD subsystem but which are used by other subsystems.
+//
+//    Input Parameters:
+//      None
+//
+//    Output Parameters:
+//      None
+//
+//    Return Values:
+//      None
+//
+//    Pre-Conditions:
+//      None
+//
+//    Miscellaneous:
+//      None
+//
+//    Requirements:  
+//
+/******************************************************************************/
+BdTask::BdTask (void)
+{
+    // The queue is big enough to hold 2 messages of the maximum size.  The
+    // extra "1" is used to hold the message size.  Each variable-size message
+    // must have an additional data element of overhead inside of the queue
+    // to hold the size.    
+//        BDQueuePtr = new Q ("BD QUEUE", (2 * (BD_Q_MSG_SIZE + 1)), NU_VARIABLE_SIZE,
+//                          BD_Q_MSG_SIZE, NU_FIFO);
+//    BDQueuePtr = new Q((2 * (BD_Q_MSG_SIZE + 1)), BD_Q_MSG_SIZE);
+//    DEBUG_BD("%d %d \n", 2 * (BD_Q_MSG_SIZE + 1), BD_Q_MSG_SIZE);
+
+//    ASSERTION(BDQueuePtr != NULL);
+
+    // Instantiate objects that are shared with other tasks.  Instantiating
+    // them here instead of at the entry point insures that they exist even
+    // if the BD Task is not running.  MgrBdSetting::S_GetInstance() will 
+    // create all of the BdSetting objects which are used by Patient Data.
+    // Assert if MgrBreathData or MgrBdSetting could not be created.
+    //    ASSERTION(MgrBreathData::S_GetInstance() != NULL);
+    //    ASSERTION(MgrBdSetting::S_GetInstance() != NULL);
+
+    // start a once second timer for the computation of
+    // O2 concentration
+    //    int status;
+
+    //    status = o2Timer.IsAcitve();
+    //    ASSERTION(status == 0);
+
+}   // end BdTask()
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: S_GetInstance()
+//
+//    Processing:
+//      Since only 1 instance of this object should be created, any access
+//      to the object comes via this operation.  If any other object wants
+//      access to the BdTask object, it invokes BdTask::S_GetInstance(),
+//      which returns a pointer to the BdTask object.
+//
+//      If the object has not already been created, this method instantiates
+//      it and returns a pointer to the object.  If the object has already been
+//      instantiated, a pointer to the object is returned.
+//
+//    Input Parameters:
+//      None
+//
+//    Output Parameters:
+//      None
+//
+//    Return Values:
+//      BdTask* - pointer to the object instantiated from this class
+//
+//    Pre-Conditions:
+//      None
+//
+//    Miscellaneous:
+//      None
+//
+//    Requirements:
+//
+/******************************************************************************/
+BdTask* BdTask::S_GetInstance (void)
+{
+    // If the object has not already been created, create it.
+    if(NULL == S_Instance)
+    {
+        S_Instance = new BdTask ();
+        ASSERTION(S_Instance != NULL);
+    }
+
+    return (S_Instance);
+
+}   // end S_GetInstance()
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: Send()
+//
+//    Processing:
+//      This operation invokes the Nucleus Plus RTOS kernel service Q::Send()
+//      to place a Batch Setting Event on the BD Queue.  This operation is
+//      not invoked in the BD Task thread of control; it is called by other
+//      tasks wanting to communicate with the BD Task via its queue.
+//
+//    Input Parameters:
+//      batchEvent - reference to a Batch Settings Change Event message
+//      suspend - indicates if the calling task should suspend if the queue
+//          is full
+//
+//    Output Parameters:
+//      None
+//
+//    Return Values:
+//      STATUS - completion status for the Nucleus Plus kernel service Send()
+//
+//    Pre-Conditions:
+//      None
+//
+//    Miscellaneous:
+//      None
+//
+//    Requirements:
+//
+/******************************************************************************/
+STATUS BdTask::Send (BdBatchSettingsChangeEvent& batchEvent, UNSIGNED suspend)
+{
+    // This value specifies the size of a Batch Setting Event.
+    //    const UNSIGNED EVENT_SIZE = (sizeof(BdBatchSettingsChangeEvent)
+    //            + sizeof(UNSIGNED) - 1) / sizeof(UNSIGNED);
+
+//    return (BdTask::BDQueuePtr->Send (&batchEvent, suspend));
+
+}   // end Send()
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: Send()
+//
+//    Processing:
+//      This operation invokes the Nucleus Plus RTOS kernel service Q::Send()
+//      to place a Single Setting Event on the BD Queue.  This operation is
+//      not invoked in the BD Task thread of control; it is called by other
+//      tasks wanting to communicate with the BD Task via its queue.
+//
+//    Input Parameters:
+//      singleSetEvent - reference to a Single Setting Change Event message
+//      suspend - indicates if the calling task should suspend if the queue
+//          is full
+//
+//    Output Parameters:
+//      None
+//
+//    Return Values:
+//      STATUS - completion status for the Nucleus Plus kernel service Send()
+//
+//    Pre-Conditions:
+//      None
+//
+//    Miscellaneous:
+//      None
+//
+//    Requirements:
+//
+/******************************************************************************/
+STATUS BdTask::Send (BdSingleSettingChangeEvent& singleSetEvent,
+                     UNSIGNED suspend)
+{
+    // This value specifies the size of a Single Setting Event.
+    //    const UNSIGNED EVENT_SIZE = (sizeof(BdSingleSettingChangeEvent)
+    //            + sizeof(UNSIGNED) - 1) / sizeof(UNSIGNED);
+
+//    return (BdTask::BDQueuePtr->Send (&singleSetEvent, suspend));
+
+}   // end Send()
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: Send()
+//
+//    Processing:
+//      This operation invokes the Nucleus Plus RTOS kernel service Q::Send()
+//      to place an Operator Request Event on the BD Queue.  This operation is
+//      not invoked in the BD Task thread of control; it is called by other
+//      tasks wanting to communicate with the BD Task via its queue.
+//
+//    Input Parameters:
+//      opReqEvent - reference to an Operator Request Event message
+//      suspend - indicates if the calling task should suspend if the queue
+//          is full
+//
+//    Output Parameters:
+//      None
+//
+//    Return Values:
+//      STATUS - completion status for the Nucleus Plus kernel service Send()
+//
+//    Pre-Conditions:
+//      None
+//
+//    Miscellaneous:
+//      None
+//
+//    Requirements:
+//
+/******************************************************************************/
+STATUS BdTask::Send (BdOpRequestEvent& opReqEvent, UNSIGNED suspend)
+{
+    // This value specifies the size of an Operator Request Event.
+    //    const UNSIGNED EVENT_SIZE =
+    //            (sizeof(BdOpRequestEvent) + sizeof(UNSIGNED) - 1)
+    //                    / sizeof(UNSIGNED);
+
+//    return (BdTask::BDQueuePtr->Send (&opReqEvent, suspend));
+
+}   // end Send()
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: Send()
+//
+//    Processing:
+//      This operation invokes the Nucleus Plus RTOS kernel service Q::Send()
+//      to place a Basic Event on the BD Queue.  This operation is
+//      not invoked in the BD Task thread of control; it is called by other
+//      tasks wanting to communicate with the BD Task via its queue.
+//
+//    Input Parameters:
+//      basicEvent - reference to an Operator Request Event message
+//      suspend - indicates if the calling task should suspend if the queue
+//          is full
+//
+//    Output Parameters:
+//      None
+//
+//    Return Values:
+//      STATUS - completion status for the Nucleus Plus kernel service Send()
+//
+//    Pre-Conditions:
+//      None
+//
+//    Miscellaneous:
+//      None
+//
+//    Requirements:
+//
+/******************************************************************************/
+STATUS BdTask::Send (BdBasicEvent& basicEvent, UNSIGNED suspend)
+{
+    // This value specifies the size of a Basic Event.
+    //    const UNSIGNED EVENT_SIZE = (sizeof(BdBasicEvent) + sizeof(UNSIGNED) - 1)
+    //            / sizeof(UNSIGNED);
+
+//    return (BdTask::BDQueuePtr->Send (&basicEvent, suspend));
+
+}   // end Send()
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: O2Timer
+//
+//    Processing: sets TIMED_EVENT_FLAG every second
+//
+//    Input Parameters: None
+//
+//    Output Parameters: None
+//
+//    Return Values: None
+//
+//    Pre-conditions: None
+//
+//    Miscellaneous: This is a High Level Interrupt service routine
+//
+//    Requirements: None
+//
+/******************************************************************************/
+void O2Timer::ExpirationRoutine (void)
+{
+    StartTimedEvent = eTrue;
+}
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: Entry()
+//
+//    Processing:
+//      This operation serves a the BD Task entry point.
+//
+//    Input Parameters:
+//      None
+//
+//    Output Parameters:
+//      None
+//
+//    Return Values:
+//      None
+//
+//    Pre-Conditions:
+//
+//    Miscellaneous:
+//
+//    Requirements:
+//
+/******************************************************************************/
+void BdTask::Entry (void* pvParameters)
+{
+    const int FOREVER = 1;//volatile UBaseType_t uxHighWaterMark;uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
+    //    Monitor *monPtr = NULL;
+    //    monPtr = new Monitor(eBd);
+    //    ASSERTION(monPtr != NULL);
+
+    // Create the BD manager objects. Each manager is responsible for
+    // creating the objects it manages.  For example, when the TriggerMgr
+    // is created, it in turn instantiates all Trigger objects.  Maintain local
+    // pointers to these manager objects since the BdTask interacts with them
+    // each time through its loop.
+    MgrOpRequest* mgrOpRequestPtr = MgrOpRequest::S_GetInstance ();
+    TriggerMgr* triggerMgrPtr = TriggerMgr::S_GetInstance ();
+    MgrBdSetting* mgrBdSettingPtr = MgrBdSetting::S_GetInstance ();
+    PhaseMgr* phaseMgrPtr = PhaseMgr::S_GetInstance ();
+
+    MgrBreathData* mgrBreathDataPtr = MgrBreathData::S_GetInstance ();
+
+
+    STATUS status = QUEUE_EMPTY;
+
+    // Fire off the mode manager; this forces the vent into startup mode.
+    // Once the first batch of settings is sent from the GUI, the ventilator
+    // transitions out of the startup mode and into the operator set mode
+    // Assert if the ModeMgr could not be created.
+    ASSERTION(ModeMgr::S_GetInstance() != NULL);
+
+    // Compute BTPS compensation factors for delivered flows.  These values
+    // are fixed based upon altitude which does not change during operation.
+    Btps::S_ComputeBtpsFactors ();
+
+    // Wait for the settings message on the BdQueue;  The BD Task does not
+    // start until it knows what the settings are from the GUI.  If the
+    // first batch settings message is not received during the
+    // the INITIAL_SETTING_TIMEOUT time period, error handling is performed.
+    //    status = BDQueuePtr->Retrieve(&bdQEntry, INITIAL_SETTING_TIMEOUT);
+
+    //    if ((status == Q_SUCCESS) &&
+    //            (bdQEntry.Event.BasicEvent.Id == eCommonBatchChangeId))
+    //    {
+    //        // Receive common settings
+    //        mgrBdSettingPtr->ReceiveRequest(bdQEntry.Event);
+    //
+    //        // Notify the Patient Data Task that settings have been received and
+    //        // it can start O2 monitoring.
+    //        (PdTask::S_GetInstance())->S_SetEventFlag(O2_SETTING_EVENT_FLAG);
+    //    }
+    //    else
+    //    {
+    //        // Log an error.
+    //        ASSERTION(eFalse);
+    //    }
+    //
+    //    status = BDQueuePtr->Retrieve( &bdQEntry, BD_Q_MSG_SIZE);
+    //    if ((status == Q_SUCCESS) && (bdQEntry.Event.BasicEvent.Id == ePressureBatchChangeId))
+    //    {
+    //        // Receive the ventilation type specific settings
+    //        mgrBdSettingPtr->ReceiveRequest(bdQEntry.Event);
+    //        // Phase in all of the settings
+    //        mgrBdSettingPtr->ProcessNewPhase();
+    //    }
+    //    else
+    //    {
+    //        // Log an error.
+    //        ASSERTION(eFalse);
+    //    }
+
+    static E_VentilationMode previousMode = eStandbyMode;
+    static bool modeChange = false;
+
+
+    while (FOREVER)
+    {
+        DEBUG_BD("BDDDD Task\n");
+
+        //        monPtr->MonitorBegin ();
+        //        {
+        //  Read flow sensor
+        //AirFlowSensor->SetTemperatureFactor();
+        //O2FlowSensor->SetTemperatureFactor();
+        //            AirFlowSensor->GetCurrentReading();
+        //            O2FlowSensor->GetCurrentReading();
+        //  Read pressure sensor
+        //            InhPressSensor->GetCurrentReading();
+        //            ExhPressSensor->GetCurrentReading();
+
+        //            FiO2Sensor->getCurrentVolt();
+        //read analog value for ADC test
+        //            AdcDacTest::GetAnalogInput();
+        //            AdcDacTest::SetAnalogOutput();
+
+        //get data from proxy sensor board
+        //            qDebug("timer 10ms = %d", timer10ms);
+        //            timer10ms++;
+        //            if(timer10ms >= 5)
+        //            {
+        //                timer10ms = 0;
+        //
+        //                SRMetranProtocol::S_GetInstance()->ProcessCommand();
+        //
+        //                SRPhilipsProtocol::S_GetInstance()->ProcessCommand();
+        //
+        //                proxySensor->CommunicateProxySensor();
+        //            }
+        //            ProxyStatus Status = proxySensor->getLastStatus();
+        //            if((Status ==eCalibrated)||(Status==eResetAndRecovered))
+        //            if(proxySensor->getLastStatus()==eCalibrated)
+        //            {
+        //                proxySensor->GetCurrentReading();
+
+        //            }
+        //            ProxyStatus currentState = proxySensor->getCurrentStatus(); // Need to work ... not debug only
+        //        }
+
+        // Sample pressure and flow for GUI, PtData and to be used by the
+        // triggers.  This call must be performed prior to the call to
+        mgrBreathDataPtr->ProcessBdCycle ();
+
+        // Check for any triggering.
+        triggerMgrPtr->ProcessBdCycle ();
+
+        // Update controllers for the current breath phase.
+        phaseMgrPtr->ProcessBdCycle ();
+
+        // See if there is anything on the BD queue.  This is done after the
+        // controllers are seviced to ensure a deterministic servicing of the
+        // controllers.
+        //        status = BDQueuePtr->Retrieve(&bdQEntry, BD_Q_MSG_SIZE);
+
+        // Take an event off of the queue; at most, 1 event is taken off of the
+        // queue each cycle.
+        //        if (status == Q_SUCCESS)
+        //        {
+        //            if ((bdQEntry.Event.BasicEvent.Id >= eFirstSettingChangeId) &&
+        //                    (bdQEntry.Event.BasicEvent.Id <= eLastSettingChangeId))
+        //            {
+        //
+        //                mgrBdSettingPtr->ReceiveRequest(bdQEntry.Event);
+        //
+        //            }
+        //            else if ((bdQEntry.Event.BasicEvent.Id >= eFirstOpRequestId) &&
+        //                    (bdQEntry.Event.BasicEvent.Id <= eLastOpRequestId))
+        //            {
+        //
+        //                mgrOpRequestPtr->ReceiveRequest(bdQEntry.Event);
+        //
+        //            }
+        //            else
+        //            {
+        //                // Log an error
+        //                ASSERTION(eFalse);
+        //            }
+        //        }
+//                E_VentilationMode currentMode = ModeMgr::S_GetInstance()->GetCurrentModeId();
+//
+//                if(StartTimedEvent == eTrue)
+//                {
+//                    StartTimedEvent = eFalse;
+//                    if(((currentMode < eFirstAlarmMode)||(currentMode > eLastAlarmMode))
+//                            &&(currentMode != eStandbyMode))
+//                        PdTask::S_GetInstance()->S_SetEventFlag(START_TIMED_EVENT_FLAG);
+//                }
+//                if(currentMode != previousMode)
+//                {
+//                    modeChange = true;
+//                    previousMode = currentMode;
+//                }
+        //        {
+        //            modeChange = false;
+        //            HfoServo::S_GetInstance()->Run();
+        //            HfoController->Run();
+        //            CMVServoController->Run();
+        //            VCVServoController->Run();
+        //            AirFlowController->Run();
+        //            O2FlowController->Run();
+        //            NCPAPController->Run();
+        //        }
+        //
+        //        FiO2Sensor->ReadVoltageValue();
+        //        DataIOReadingTimer++;
+        //        if(DataIOReadingTimer > DATA_READING_TIME)
+        //        {
+        //            DataIOReadingTimer = 0;
+        //            ReadDInput();
+        //            WriteDOutput();
+        //
+        //            if(FiO2Sensor->IsO2SensorConnect() == eTrue)
+        //                FiO2Sensor->AddCounts();
+        //        }
+        //        monPtr->MonitorEnd();
+        vTaskDelay (BD_TASK_DELAY_TIME);  //delay 20 ms
+        //uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
+        //Board_UARTDebug("StackSize BD: %d \n", uxHighWaterMark);
+    }
+}   // end Entry()

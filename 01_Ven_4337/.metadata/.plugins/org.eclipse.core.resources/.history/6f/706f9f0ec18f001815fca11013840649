@@ -1,0 +1,315 @@
+#include "ProxyFlowTask.h"
+#include "ProxyFlowSensor.h"
+#include "SystemConfigure.h"
+
+ProxyFlowTask *ProxyFlowTask::S_Instance = NULL;
+
+ProxyFlowTask* ProxyFlowTask::S_GetInstance (void)
+{
+    //Create object if it is null
+    if (S_Instance == NULL)
+    {
+        S_Instance = new ProxyFlowTask();
+    }
+    //check object is null or not
+    ASSERTION(S_Instance != NULL);
+
+    return(S_Instance);
+}
+
+void ProxyFlowTask::Init (void)
+{
+    ProxyFlowSensor::S_GetInstance()->Init();
+}
+
+void ProxyFlowTask::ProxyFlowCreateTask (void)
+{
+    xTaskCreate(Entry, "ProxyFlowTask", FLOWRS485_TASK_SIZE ,NULL,
+                FLOWRS485_TASK_PRIORITY, (TaskHandle_t *) NULL);
+}
+
+
+
+void GetDeviceName(void)
+{
+    ProxySensorSendFrameData GetDeviceName;
+
+    GetDeviceName.Address = 0x00;
+    GetDeviceName.CMD = 0xD0;
+    GetDeviceName.LengTH = 0x01;
+    GetDeviceName.Data[0] = 0x01;
+
+    uint8_t DataToSen[6 + GetDeviceName.LengTH] = {};
+    uint32_t SizeofData;
+
+    ProxyFlowSensor::S_GetInstance()->GenerateFrameData(&GetDeviceName, DataToSen, SizeofData);
+
+    for(uint32_t i = 0; i < SizeofData; ++i)
+    {
+        DEBUG_PROXYFLOWTASK("%x ", DataToSen[i]);
+    }
+    DEBUG_PROXYFLOWTASK("\n");
+
+    uint8_t Data[] = {};
+    uint64_t DSize = 0;
+
+    ProxyFlowSensor::S_GetInstance()->ConvertByteArrayToSend(DataToSen, SizeofData, Data, DSize);
+
+    for(uint32_t i = 0; i < DSize; ++i)
+    {
+        DEBUG_PROXYFLOWTASK("%x ", Data[i]);
+    }
+    DEBUG_PROXYFLOWTASK("\n");
+
+
+    vTaskSuspendAll();
+//    ProxyFlowSensor::S_GetInstance()->SendDataToUART(DataToSen, SizeofData);
+    ProxyFlowSensor::S_GetInstance()->SendDataToUART(Data, DSize);
+    xTaskResumeAll();
+
+    uint8_t cmd[32]= {0};
+    int num = ProxyFlowSensor::S_GetInstance()->ReadDataFromUART(cmd, 32);
+
+    DEBUG_PROXYFLOWTASK("Read data(%d) \n", num);
+    for(int i = 0; i < num; ++i)
+    {
+        DEBUG_PROXYFLOWTASK("%x ", cmd[i]);
+    }
+
+    DEBUG_PROXYFLOWTASK("\n\n ");
+    ProxySensorRecFrameData recData;
+
+    if(ProxyFlowSensor::S_GetInstance()->ConvertReceiveDataToFrameData(cmd, num, &recData))
+    {
+        DEBUG_PROXYFLOWTASK("OK\n");
+    }
+    else
+    {
+        DEBUG_PROXYFLOWTASK("BAD\n");
+    }
+}
+
+void ProxyFlowTask::Entry (void* pvParameters)
+{
+    const int FOREVER = 1;
+
+    static bool bSingleMeasure = true;
+    static bool bReadMeasure = false;
+
+    ProxySensorRecFrameData RecDataNhan;
+    uint8_t recData[32] = {0};
+
+    //number of data return
+    int num = 0;
+
+    while(FOREVER)
+    {
+
+        DEBUG_PROXYFLOWTASK("ProxyFlowTask\n");
+//        GetDeviceName();
+
+        ProxySensorSendFrameData StartMeasure;
+        StartMeasure.Address = 0x00;
+        StartMeasure.CMD = 0x31;
+        StartMeasure.LengTH = 0x00;
+        uint8_t StartData[6 + StartMeasure.LengTH] = {};
+        uint32_t SizeofStart = 0;
+
+        uint8_t Data[] = {};
+        uint64_t DSize = 0;
+
+//        ProxyFlowSensor::S_GetInstance()->ConvertByteArrayToSend(StartData, SizeofStart, Data, DSize);
+//        for(int i = 0; i < DSize; ++i)
+//        {
+//            DEBUG_PROXYFLOWTASK("%x ", Data[i]);
+//        }
+//
+//        DEBUG_PROXYFLOWTASK("\n");
+//
+//        vTaskSuspendAll();
+//        ProxyFlowSensor::S_GetInstance()->SendDataToUART(Data, DSize);
+//        xTaskResumeAll();
+//
+//        num = ProxyFlowSensor::S_GetInstance()->ReadDataFromUART(recData, 32);
+//
+//        DEBUG_PROXYFLOWTASK("Rec(%d)= ", num);
+//        for(int i = 0; i < num; ++i)
+//        {
+//            DEBUG_PROXYFLOWTASK("%x ", recData[i]);
+//        }
+//        DEBUG_PROXYFLOWTASK("\n");
+
+        //        if(bSingleMeasure)
+        //        {
+        //
+        //            ProxySensorSendFrameData StartMeasure;
+        //
+        //            StartMeasure.Address = 0x00;
+        //            StartMeasure.CMD = 0x31;
+        //            StartMeasure.LengTH = 0x00;
+        //
+        //            uint8_t StartData[6 + StartMeasure.LengTH] = {};
+        //            uint32_t SizeofStart;
+        //
+        //            ProxyFlowSensor::S_GetInstance()->GenerateFrameData(&StartMeasure, StartData, SizeofStart);
+        //
+        ////            DEBUG_PROXYFLOWTASK("StartMeasure- Send: ");
+        ////            for(uint32_t i = 0; i < SizeofStart; ++i)
+        ////            {
+        ////                DEBUG_PROXYFLOWTASK("%x ", StartData[i]);
+        ////            }
+        ////            DEBUG_PROXYFLOWTASK("\n");
+        //
+        //            vTaskSuspendAll();
+        //            ProxyFlowSensor::S_GetInstance()->SendDataToUART(StartData, SizeofStart);
+        //            xTaskResumeAll();
+        //
+        //            bSingleMeasure = false;
+        //        }
+        //        else
+        //        {
+        //            bReadMeasure = true;
+        //        }
+        //
+        //        if(bReadMeasure)
+        //        {
+        //            ProxySensorSendFrameData GetData;
+        //
+        //            GetData.Address = 0x00;
+        //            GetData.CMD = 0x32;
+        //            GetData.LengTH = 0x00;
+        //
+        //            uint8_t Data[6 + GetData.LengTH] = {};
+        //            uint32_t SizeofData;
+        //
+        //            ProxyFlowSensor::S_GetInstance()->GenerateFrameData(&GetData, Data, SizeofData);
+        //
+        ////            DEBUG_PROXYFLOWTASK("\nGetData- send CMD: ");
+        ////            for(uint32_t i = 0; i < SizeofData; ++i)
+        ////            {
+        ////                DEBUG_PROXYFLOWTASK("%x ", Data[i]);
+        ////            }
+        ////            DEBUG_PROXYFLOWTASK("\n");
+        //
+        //            vTaskSuspendAll();
+        //            ProxyFlowSensor::S_GetInstance()->SendDataToUART(Data, SizeofData);
+        //            xTaskResumeAll();
+        //
+        //            bReadMeasure = false;
+        //            bSingleMeasure = true;
+        //        }
+        //        else
+        //        {
+        //
+        //        }
+        //
+        //
+        //        num = ProxyFlowSensor::S_GetInstance()->ReadDataFromUART(recData, 32);
+        //
+        ////         DEBUG_PROXYFLOWTASK("Rec(%d)= ", num);
+        ////         for(int i = 0; i < num; ++i)
+        ////         {
+        ////             DEBUG_PROXYFLOWTASK("%x ", recData[i]);
+        ////         }
+        ////         DEBUG_PROXYFLOWTASK("\n");
+        //
+        //         if(ProxyFlowSensor::S_GetInstance()->ConvertReceiveDataToFrameData(recData, num, &RecDataNhan))
+        //         {
+        //
+        //             if(RecDataNhan.CMD == 0x31)
+        //             {
+        //                 DEBUG_PROXYFLOWTASK("\n\nSINGLE \n");
+        ////                 bSingleMeasure = false;
+        ////                 bReadMeasure = true;
+        //             }
+        //             else if(RecDataNhan.CMD == 0x32)
+        //             {
+        //                 DEBUG_PROXYFLOWTASK("\n\nSTART READ(%d) = \n", RecDataNhan.LengTH);
+        //
+        //                 for(int i = 0; i < RecDataNhan.LengTH; ++i)
+        //                 {
+        //                     DEBUG_PROXYFLOWTASK("%x ", RecDataNhan.Data[i]);
+        //                 }
+        //
+        //                 uint16_t temp =  (RecDataNhan.Data[0] << 8) + RecDataNhan.Data[1];
+        //
+        //                 DEBUG_PROXYFLOWTASK("temp = %d ", temp);
+        //
+        //                 DEBUG_PROXYFLOWTASK("\n");
+        ////                 bSingleMeasure = true;
+        ////                 bReadMeasure = false;
+        //             }
+        //
+        //         }
+        //         else
+        //         {
+        //             DEBUG_PROXYFLOWTASK("\n\nDEFAULT \n");
+        ////             bSingleMeasure = true;
+        ////             bReadMeasure = false;
+        //         }
+        //
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        vTaskDelay(5/portTICK_PERIOD_MS);
+    }
+}
+
+void ProxyFlowTask::ProxyFlowReadTask (void)
+{
+    xTaskCreate(Read, "ProxyFlowTask", FLOWRS485_TASK_SIZE ,NULL,
+                (tskIDLE_PRIORITY + 4UL), (TaskHandle_t *) NULL);
+}
+
+void ProxyFlowTask::Read (void* P)
+{
+    const int FOREVER = 1;
+
+    uint8_t cmd[32]= {0};
+
+    while(FOREVER)
+    {
+
+        int num = ProxyFlowSensor::S_GetInstance()->ReadDataFromUART(cmd, 32);
+
+        DEBUG_PROXYFLOWTASK("Read data(%d) \n", num);
+
+        ProxySensorRecFrameData recData;
+
+        if(ProxyFlowSensor::S_GetInstance()->ConvertReceiveDataToFrameData(cmd, num, &recData))
+        {
+            DEBUG_PROXYFLOWTASK("%x %x %x %x \n", recData.Address, recData.CMD, recData.State, recData.LengTH);
+            for(int i = 0; i < recData.LengTH; ++i)
+            {
+                DEBUG_PROXYFLOWTASK("%c ", recData.Data[i]);
+            }
+            DEBUG_PROXYFLOWTASK("\n");
+        }
+
+        vTaskDelay(2/portTICK_PERIOD_MS);
+
+    }
+}
+
+ProxyFlowTask::ProxyFlowTask (void)
+{
+}

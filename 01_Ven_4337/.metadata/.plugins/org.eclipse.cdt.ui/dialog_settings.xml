@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<item value="${workspace_loc:/${ProjName}/inc}" key="org.eclipse.cdt.utils.ui.controls.FileListControl"/>
+	<item value="Default C++ source template" key="LastUsedSourceTemplate"/>
+	<item value="Default C++ header template" key="LastUsedHeaderTemplate"/>
+	<section name="org.eclipse.cdt.ui.OPEN_ACTION_SELECTION_DIALOG_SECTION">
+		<item value="398" key="DIALOG_WIDTH"/>
+		<item value="1|Segoe UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI" key="DIALOG_FONT_NAME"/>
+		<item value="438" key="DIALOG_HEIGHT"/>
+		<item value="769" key="DIALOG_X_ORIGIN"/>
+		<item value="236" key="DIALOG_Y_ORIGIN"/>
+	</section>
+	<section name="org.eclipse.cdt.ui.text.hover.CMacroExpansionExploration.internal">
+		<item value="180" key="size.height"/>
+		<item value="914" key="size.width"/>
+	</section>
+	<section name="org.eclipse.cdt.ui.text.hover.CMacroExpansionExploration">
+	</section>
+	<section name="PDOMSearchPage">
+		<item value="false" key="caseSensitive"/>
+		<item value="227191" key="searchFlags"/>
+		<list key="previousPatterns">
+			<item value="SENSOR_I2C_SEND_ADDR"/>
+			<item value="StepMotor::SetStepPosition"/>
+			<item value="hfo"/>
+			<item value="BDQueuePtr"/>
+			<item value="configTOTALHEAPSIZE"/>
+			<item value="Initialize"/>
+			<item value="Initialize81"/>
+			<item value="O2Timer"/>
+			<item value="E_OpRequestCommand"/>
+			<item value="ASSERTION"/>
+			<item value="QueueHandle_t"/>
+			<item value="libusbdev_desc"/>
+			<item value="IRQHandler"/>
+			<item value="lusb_BulkOUT_Hdlr"/>
+			<item value="USB_IRQHandler"/>
+			<item value="ProxyFlowReadTask"/>
+			<item value="Board_DelayUs"/>
+			<item value="DEBUG_ENABLE"/>
+			<item value="LPC_UART0"/>
+			<item value="DEBUG_UART"/>
+			<item value="LPC_USART0"/>
+			<item value="DEBUG_MAIN"/>
+		</list>
+	</section>
+	<section name="completion_proposal_size">
+	</section>
+</section>

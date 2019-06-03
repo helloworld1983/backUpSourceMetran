@@ -1,0 +1,36 @@
+SAP 4, 0, 2047    //set Maximum speed [int] 2047
+STAP 4, 0    //store Maximum speed [int] 2047
+
+SAP 5, 0, 2047    //set Maximum acceleration [int] 2047
+STAP 5, 0    //store Maximum acceleration [int] 2047
+
+SAP 6, 0, 127    //set Maximum current 127
+STAP 6, 0    //store Maximum current 127
+
+SAP 7, 0, 20    //set Standby current 20
+STAP 7, 0    //store Standby current 20
+
+SAP 12, 0, 1    //set Right limit switch disable
+STAP 12, 0    //store Right limit switch disable
+
+SAP 13, 0, 1    //set Left limit switch disable
+STAP 13, 0    //store Left limit switch disable
+
+SAP 140, 0, 8    //set Microstep Resolution 256
+STAP 140, 0    //store Microstep Resolution 256
+
+SAP 153, 0, 4    //set Ramp divisor 4
+STAP 153, 0    //store Ramp divisor 4
+
+SAP 154, 0, 4    //set Pulse divisor 4
+STAP 154, 0    //store Pulse divisor 4
+
+SGP 65, 0, 8    //set Serial baud rate 203400
+SAP 135, 0, 2047    //set Actual acceleration [int] 2047
+
+SGP 76, 0, 3    //set Serial host address 3
+SGP 66, 0, 2    //set Serial address 0x01
+
+
+
+

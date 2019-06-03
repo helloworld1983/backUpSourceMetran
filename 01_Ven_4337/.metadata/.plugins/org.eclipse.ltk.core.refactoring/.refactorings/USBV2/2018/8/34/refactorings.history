@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;USBV2/src/libusbdev_desc.cpp&apos; to &apos;libusbdev_desc.c&apos;" description="Rename resource &apos;libusbdev_desc.cpp&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="src/libusbdev_desc.cpp" name="libusbdev_desc.c" stamp="1534990293335" updateReferences="true"/>
+</session>

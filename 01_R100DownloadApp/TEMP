@@ -1,0 +1,61 @@
+WindowsGUITestLib.lib(mainhandlerdelegate.obj) :
+ error LNK2001: unresolved external symbol 
+ "public: __thiscall TrackingUpperLimitSetting::TrackingUpperLimitSetting
+ (
+    long,                    desc->LowerLimit,                  LONG lowerLimit,
+    long,                    desc->UpperLimit,                  LONG upperLimit, 
+    enum E_DisplayPolicy,    desc->DisplayPolicy,               E_DisplayPolicy policy,
+    long,                    desc->PolicyChangeBoundary,        LONG policyChangeBoundary, 
+    enum E_UnitsType,        desc->UnitsType,                   E_UnitsType unitsType,
+    enum E_BdEventId,        desc->BdQueueEntryID,              E_BdEventId BdQueueEntryID,
+    enum E_GUIEventID,       desc->EventID,                     E_GUIEventID guiid,
+    long,                    desc->DefaultValue,                LONG defaultValue,
+    enum E_VentilationType,  desc->OwnerVentType,               E_VentilationType owner,
+    char *,                  lib->GetString(desc->AbbrevName),  STRING abbrevName = 0,
+    char *                   lib->GetString(desc->FullName)     STRING fullName = 0
+)" (??0TrackingUpperLimitSetting@@QAE@JJW4
+E_DisplayPolicy@@JW4
+E_UnitsType@@W4
+E_BdEventId@@W4
+E_GUIEventID@@JW4
+E_VentilationType@@PAD5@Z)
+
+            S_Models[desc->EventID] = new TrackingUpperLimitSetting
+            (
+                desc->LowerLimit, 
+                desc->UpperLimit,
+                desc->DisplayPolicy,
+                desc->PolicyChangeBoundary,
+                desc->UnitsType,
+                desc->BdQueueEntryID,
+                desc->EventID,
+                desc->DefaultValue,
+                desc->OwnerVentType,
+                lib->GetString(desc->AbbrevName), 
+                lib->GetString(desc->FullName)    
+            );
+
+
+
+
+LONG lowerLimit,
+LONG upperLimit, 
+E_DisplayPolicy policy,
+LONG policyChangeBoundary, 
+E_UnitsType unitsType,
+E_BdEventId BdQueueEntryID,
+E_GUIEventID guiid,
+LONG defaultValue,
+E_VentilationType owner,
+STRING abbrevName = 0,
+STRING fullName = 0
+
+
+
+
+
+
+
+
+
+

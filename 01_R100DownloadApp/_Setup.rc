@@ -1,0 +1,421 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif\r\n"
+    "#include ""res\\_Setup.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\_Setup.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_PROGRESS DIALOG 50, 80, 229, 100
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "M6 V850E Setup Progress"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Cancel",IDCANCEL,89,79,50,14
+    CONTROL         "Progress1",IDC_PROGDLG_PROGRESS,"msctls_progress32",WS_BORDER,11,55,206,13
+    CTEXT           " 0 %",IDC_PROGDLG_PERCENT,11,44,206,8
+    LTEXT           "",IDC_PROGDLG_STATUS,11,7,206,24
+END
+
+IDD_WELCOME DIALOG 0, 0, 384, 199
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "M6 V850E Setup  X1.00.001"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "",IDC_STATIC,107,7,270,101
+    ICON            IDR_MAINFRAME,IDC_STATIC,143,18,20,20,SS_REALSIZEIMAGE
+    CTEXT           "Welcome to the %s installation program.",IDC_WELCOME,175,22,176,24
+    LTEXT           "%s loads the software which controls the M6 ventilator.  This computer must be connected to the ventilator's serial port and the ventilator must be powered on in ""download"" mode.  This program will guide you through the process.",IDC_WELCOME1,116,55,253,36
+    CTEXT           "Click Next to continue %s or Cancel to quit the setup.",IDC_WELCOME2,120,121,245,16
+    LTEXT           "If you would like to know more about the setup process, click the Help button. In the following setup screens, click Help to obtain a more detailed description of the setup screen or its options.",IDC_STATIC,119,153,245,24
+    CONTROL         IDB_COMPUTER,IDC_STATIC,"Static",SS_BITMAP | SS_CENTERIMAGE | SS_SUNKEN,10,10,90,180
+END
+
+IDD_EXITSUCCESS DIALOG 75, 55, 225, 87
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "M6 V850E Setup"
+FONT 8, "Helv"
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,18,6,20,20
+    LTEXT           "%s Succeeded!",IDC_SUCCEEDED,50,13,162,16,SS_NOPREFIX
+    CTEXT           "Success message",IDC_MESSAGE,11,33,199,16
+    DEFPUSHBUTTON   "OK",IDOK,78,66,68,14,WS_GROUP
+END
+
+IDD_SETUP_LANGUAGE DIALOG 0, 0, 341, 199
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "Select CPU Image"
+FONT 8, "MS Sans Serif"
+BEGIN
+    COMBOBOX        IDC_COMBO_LANGUAGES,162,99,148,86,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Please select which CPU image you wish to install.",IDC_STATIC,164,62,121,23
+    GROUPBOX        "",IDC_STATIC,141,35,193,114
+    CONTROL         IDB_COMPUTER,IDC_STATIC,"Static",SS_BITMAP | SS_CENTERIMAGE | SS_SUNKEN,10,10,90,180
+END
+
+IDD_SETUP_HARDWARE DIALOGEX 0, 0, 354, 202
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Prepare Hardware"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    LTEXT           "To complete the software installation, this computer must be attached to the serial port of the M6 ventilator.  Please select the port on this computer that the ventilator is attached to.",IDC_STATIC,176,15,171,35
+    LTEXT           "To prepare the ventilator for receiving new software, turn on the power switch of the ventilator.",IDC_STATIC,176,79,171,36
+    LTEXT           "Click Finish to complete the installation or Cancel to quit the setup.",IDC_STATIC,176,119,171,18
+    CONTROL         IDB_ESPRIT,IDC_STATIC,"Static",SS_BITMAP | SS_SUNKEN | WS_BORDER,7,7,130,196
+    COMBOBOX        IDC_COMBO_COMMPORTS,176,57,81,67,CBS_DROPDOWNLIST | WS_TABSTOP
+    LTEXT           "",IDC_HARDWARE_STATUS,176,148,148,14,SS_CENTERIMAGE,WS_EX_RIGHT
+END
+
+IDD_GET_SERIAL_NUMBER DIALOG 0, 0, 186, 92
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Serial Number"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,24,71,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,110,71,50,14
+    EDITTEXT        IDC_SERIAL_NUMBER,59,34,67,14,ES_AUTOHSCROLL
+    CTEXT           "Wait for Vent to Enter diagnostics\nEnter Serial Number",IDC_STATIC,7,11,172,19
+    CTEXT           "Note: Serial Number Must begin with VS",IDC_SN_NOTE,7,58,172,12
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 0,0,0,0
+ PRODUCTVERSION 0,0,0,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "Comments", "M6 Software download routine"
+            VALUE "CompanyName", "Metran Company"
+            VALUE "FileDescription", "M6 Setup"
+            VALUE "FileVersion", "X1.00.000"
+            VALUE "InternalName", "Setup_"
+            VALUE "LegalCopyright", "Copyright © 1999 Respironics Corporation"
+            VALUE "OriginalFilename", "_Setup.exe"
+            VALUE "ProductName", "M6"
+            VALUE "ProductVersion", "X1.00.000"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_PROGRESS, DIALOG
+    BEGIN
+        LEFTMARGIN, 11
+        RIGHTMARGIN, 217
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 93
+    END
+
+    IDD_WELCOME, DIALOG
+    BEGIN
+        RIGHTMARGIN, 377
+    END
+
+    IDD_EXITSUCCESS, DIALOG
+    BEGIN
+    END
+
+    IDD_SETUP_LANGUAGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 334
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 192
+    END
+
+    IDD_SETUP_HARDWARE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 347
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 195
+    END
+
+    IDD_GET_SERIAL_NUMBER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 85
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_ESPRIT              BITMAP                  "res\\esprit.bmp"
+
+IDB_COMPUTER            BITMAP                  "res\\Computer.bmp"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DIB
+//
+
+IDB_SETUP16             DIB                     "res\\Setup16.bmp"
+
+IDB_SETUP256            DIB                     "res\\Setup256.bmp"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_SETUP_HARDWARE AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_SETUPEXE            "Setup.exe"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_INSTALLEDAPPLICATIONTITLE "M6 V850E"
+    IDS_SETUPAPPLICATIONTITLE "M6 V850E Setup"
+    IDS_INSTALLEDAPPLICATIONSHORTCUT "M6 V850E"
+    IDS_SETUPAPPLICATIONSHORTCUT "M6 V850E Setup"
+    IDS_SUCCESS_MESSAGE     "Thank you for installing this firmware update for the %s ventilator."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_SETUPDIRNAME        "M6"
+    IDS_FLASHMEM_WRITE_ERROR "Flash Memory Write failed."
+    IDS_ERR_COMM_PORT_READ  "Comm port read failure."
+    IDS_COMM_PORT_OPEN      "Communications Port opened."
+    IDS_ERR_COMM_PORT_NOT_OPEN 
+                            "Unable to open initial communication with the ventilator."
+    IDS_DOWNLOADING         "Firmware download in progress."
+    IDS_ERR_FILE_NOT_OPEN   "Download file could not be opened."
+    IDS_ERR_SEND_IMAGE_INFO "Failure occurred while transmitting firmware image description."
+    IDS_ERR_UNEXPECTED_PORT_CLOSURE "Communication port closed unexpectedly."
+    IDS_ERR_DOWNLOADING     "Error occurred while downloading firmware image."
+    IDS_DOWNLOAD_COMPLETE   "Download operation successful."
+    IDS_ERR_FILE_HEADER     "Error reading image file header."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_INCOMPATIBLE_RELEASE 
+                            "This firmware release is not compatible with the ventilator to which you are connected."
+    IDS_ERR_HANDSHAKE       "Failure occurred while transmitting message for ventilator to expect download image information message."
+    IDS_ERR_ACKNWLEDGEMENT  "Failure occurred while attempting to read an acknowledgement for server to proceed with info packet."
+    IDS_ERR_WRONG_MESSAGE   "A download information request message was expected from the ventilator. %s was received instead."
+    IDS_ERR_LANG_FILE_NOT_OPEN 
+                            "The image file for the selected language, %s, could not be opened."
+    IDS_ERR_TRANSMITTING_INFO 
+                            "Failure occurred while transmitting info packet to ventilator."
+    IDS_ERR_SENDING_CK_SUM  "Failure occurrred while sending checksum to ventilator."
+    IDS_INCOMPATIBLE_VERSION 
+                            "This firmware release is intended for processor part number %s. It is not compatible with the ventilator (PROM revision %s) which you are connected to"
+    IDS_FLASH_BURNING_TIMEOUT 
+                            "Timeout occurred while burning image in flash memory."
+    IDS_ERR_INFO_NOT_ACKNOWLEDGED 
+                            "Ventilator didn't acknowledge the download info message."
+    IDS_ERR_WRONG_ACK       "Ventilator gave inappropriate acknowledgement to download info message."
+    IDS_DOWNLOADING_BLOCK   "Downloading Block: %d of %d"
+    IDS_ERR_IO              "Download file I/O Error"
+    IDS_ERR_RESENDING       "Resending block: %d   Corrupted Attempts: %d   Total Attempts: %d"
+    IDS_FAILED_SENDING_BLOCK "Failed sending Block %d after %d attempts."
+    IDS_UNDEF_ERROR_MESSAGE "Undefined Error Message"
+END
+
+STRINGTABLE
+BEGIN
+    IDP_SUPPORTEDOS         "%s was designed to run on Windows 95, Windows NT 3.51 or later versions of these operating systems. Please run %s from one of these operating systems."
+    IDP_SETUPABORTED        "Setup was aborted! Please run setup again."
+    IDP_SETUPFAILED         "Setup failed! The error reported by the operating system is '%s'. Please run setup again."
+    IDP_NOTENOUGHDISKSPACE  "There is not enough free disk space to install the application. Setup will NOT be able to complete successfully. Continuing setup is NOT recommended. Would you like to continue?"
+    IDP_UNKNOWNDISKSPACE    "Setup cannot determine if there is enough free disk space to install the application. If there is not enough disk space, Setup will NOT be able to complete successfully. Would you like to continue?"
+    IDS_ERROR_NOPORT        "Unable to open communication with ventilator."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_VENTILATOR_REPORT   "Ventilator reports: %s\n"
+    IDS_WAIT_FOR_BURNING    "Waiting for firmware image to be burned into flash memory."
+    IDS_ERR_INITIAL_SYNC    "Failure reading initial sync character from ventilator.  "
+    IDS_ERR_SENDING_REQUEST "Failure sending a ventilator information request message."
+    IDS_ERR_COM_PORT_READ   "COM port read failure."
+    IDS_ERR_WRONG_REQUEST_MESSAGE "Wrong download request message %s."
+    IDS_ERR_NO_INFO_REQUEST "An acknowledgement was not received which indicates that the ventilator would be sending an info packet."
+    IDS_ERR_NO_CK_SUM       "Failed to receive ventilator info packet check sum."
+    IDS_ERR_INFO_CK_SUM     "Ventilator info packet check sum error."
+    IDS_ERR_SENDING_ACK     "Failure occurred while sending a vent information ack message."
+    IDS_ERR_NO_VENTINFO     "Failed to receive a ventilator information packet."
+    IDS_UNDEFINED_ERROR     "Unknown error."
+    IDS_FLASH_MEM_WRITE_ERROR "Flash memory write failed."
+    IDS_ERR_CHECKSUM        "Download data block checksum failed."
+    IDS_ERR_CRC             "Flash image CRC validation failed."
+    IDS_BLOCK_NUM_OUTOF_SYNC "Data transmission block number out of sync."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_ERR_FLASH_ERASE     "Flash memory could not be successfully erased."
+    IDS_FLASH_BURNING       "Burning download image....."
+    IDS_ERR_FLASH_TIMEOUT   "Timeout occurred while burning image in flash memory."
+    IDS_DOWNLOAD_SUCCESS    "Download completed successfully."
+    IDS_NO_CONNECTION       "The ventilator does not appear to be connected to the COM port which you selected.  Sync characters are not being received from the ventilator.  Please verify that the ventilator is attached to the correct COM port and the ventilator is in ""download mode"".   If the connection still does not work,  turn off the ventilator, bring it up  in ""download mode"", and press ""Finish""  again."
+    IDS_VERIFYING_CONNECTION 
+                            ".....verifying the connection with the ventilator."
+    IDS_NO_PORT             "The COM Port which you selected does not appear to exist on this computer.  Please select another COM port. "
+    IDS_CONFIGURATION_ERROR "The COM port which you selected could not be set to the required configuration.  Please select another COM port and make sure that it is connected to the ventilator."
+    IDS_SUCCESSFUL_CONNECTION 
+                            "This computer is successfully connected to the ventilator on the selected COM port.  "
+    IDS_NO_PORT_HANDLE      "The communications port which you selected does not appear to exist on this computer.  Please select another port."
+    IDS_OPEN_SUCCESS        "The port was opened successfully."
+    IDS_INITIALIZATION_ERROR 
+                            "Asynchronous I/O events could not be created.  Please call tech support. "
+    IDS_ERR_BADSYNC         "Incorrect sync characters have been received from the ventilator.  Please check the RS232 cable and its connections before proceeding.  If this error cannot be corrected by adjusting the RS232 cable and its connections, cycle power on the ventilator and try again."
+    IDS_ERR_BADREQUESTACK   "An acknowlegement was received from the ventilator which should have indicated that it was going to send an info packet. The wrong code was received. "
+    IDS_ERR_SEND_WRITE      "Error occurred while downloading firmware image: unsuccessful write to COM port."
+    IDS_ERR_SEND_NORESPONSE "Error occurred while downloading firmware image: no response from ventilator."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_ERR_SEND_EXCEEDED   "Error occurred while downloading firmware image: maximum resend trys exceeded."
+    IDS_SEND_OK             "Data sent successfully."
+    IDS_ERR_FLASHTIMEOUT    "The firmware image could not be burned into flash memory within the flash timeout period. Please restart this setup program and try again."
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif
+#include "res\_Setup.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

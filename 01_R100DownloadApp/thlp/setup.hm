@@ -1,0 +1,27 @@
+// MAKEHELP.BAT generated Help Map file.  Used by _Setup.hpj. 
+ 
+// Commands (ID_* and IDM_*) 
+ 
+// Prompts (IDP_*) 
+HIDP_SUPPORTEDOS                        0x301F4
+HIDP_SETUPABORTED                       0x301F6
+HIDP_SETUPFAILED                        0x301F7
+HIDP_NOTENOUGHDISKSPACE                 0x301F8
+HIDP_UNKNOWNDISKSPACE                   0x301F9
+ 
+// Resources (IDR_*) 
+HIDR_MAINFRAME                          0x20065
+HIDR_LICENSEAGREEMENT                   0x20066
+HIDR_SLEEP_COM                          0x20067
+HIDR_SETUP_PIF                          0x20068
+ 
+// Dialogs (IDD_*) 
+HIDD_SETUP_LANGUAGE                     0x2006F
+HIDD_SETUP_HARDWARE                     0x20070
+HIDD_SERIAL_NUMBER                      0x20074
+HIDD_GET_SERIAL_NUMBER                  0x20077
+HIDD_PROGRESS                           0x20078
+HIDD_WELCOME                            0x2007B
+HIDD_EXITSUCCESS                        0x20093
+ 
+// Frame Controls (IDW_*) 

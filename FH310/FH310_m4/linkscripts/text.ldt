@@ -1,0 +1,9 @@
+<#global skipCompare=true> 
+
+<#if memory.alias=="Flash3">
+        *spifidata/*(.text*)
+</#if>
+    	*(.text_${memory.alias}*) /* for compatibility with previous releases */
+    	*(.text_${memory.name}*) /* for compatibility with previous releases */
+    	*(.text.$${memory.alias}*)
+    	*(.text.$${memory.name}*)

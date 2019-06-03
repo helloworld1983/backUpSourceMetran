@@ -1,0 +1,26 @@
+<!-- liblinks.xml
+
+     Code Red Technologies "Smart update wizard" script file
+     When executed on a particular application project, will
+     add appropriate links to the specified library project.
+
+     Note that this script assumes that the application project
+     contains the standard 'Debug' and 'Release' build 
+     configurations.
+-->
+
+<project name="" update="true">
+	<setting id="all.compiler.inc">
+		<value>${workspace_loc:/emWin_M4F/inc}</value>
+        </setting>
+	<setting id="linker.libs">
+		<value>emWin_M4F</value>
+	</setting>
+	<setting id="linker.paths">
+		<value>${workspace_loc:/emWin_M4F/lib}</value>
+	</setting>
+	<requires msg="Library project `emWin_M4F` not found">
+		<value>emWin_M4F</value>
+	</requires>
+</project>
+

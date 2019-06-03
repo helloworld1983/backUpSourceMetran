@@ -1,0 +1,51 @@
+################################################################################
+# Automatically-generated file. Do not edit!
+################################################################################
+
+# Add inputs and outputs from these tool invocations to the build variables 
+C_SRCS += \
+../freertos/src/FreeRTOSCommonHooks.c \
+../freertos/src/FreeRTOS_lpc43xx_m0_Tick.c \
+../freertos/src/croutine.c \
+../freertos/src/event_groups.c \
+../freertos/src/heap_3.c \
+../freertos/src/list.c \
+../freertos/src/port.c \
+../freertos/src/queue.c \
+../freertos/src/tasks.c \
+../freertos/src/timers.c 
+
+OBJS += \
+./freertos/src/FreeRTOSCommonHooks.o \
+./freertos/src/FreeRTOS_lpc43xx_m0_Tick.o \
+./freertos/src/croutine.o \
+./freertos/src/event_groups.o \
+./freertos/src/heap_3.o \
+./freertos/src/list.o \
+./freertos/src/port.o \
+./freertos/src/queue.o \
+./freertos/src/tasks.o \
+./freertos/src/timers.o 
+
+C_DEPS += \
+./freertos/src/FreeRTOSCommonHooks.d \
+./freertos/src/FreeRTOS_lpc43xx_m0_Tick.d \
+./freertos/src/croutine.d \
+./freertos/src/event_groups.d \
+./freertos/src/heap_3.d \
+./freertos/src/list.d \
+./freertos/src/port.d \
+./freertos/src/queue.d \
+./freertos/src/tasks.d \
+./freertos/src/timers.d 
+
+
+# Each subdirectory must supply rules for building sources it contributes
+freertos/src/%.o: ../freertos/src/%.c
+	@echo 'Building file: $<'
+	@echo 'Invoking: MCU C Compiler'
+	arm-none-eabi-gcc -DDEBUG -D__CODE_RED -DCORE_M0 -D__USE_LPCOPEN -D__LPC43XX__ -D__REDLIB__ -D__MULTICORE_M0APP -DCORE_M0APP -I"D:\MetranProject\FH310\ReleaseWspace\lpc_board_ea_oem_4357_m0\inc" -I"D:\Metran_Project\FH-310\workspace\FH310_m0\inc" -I"D:\MetranProject\FH310\ReleaseWspace\FH310_m0_unitest\freertos\inc" -I"D:\Metran_Project\FH-310\workspace\FH310_m0\device\inc" -I"D:\MetranProject\FH310\ReleaseWspace\FH310_m0_unitest\ceedling\src" -I"D:\MetranProject\FH310\ReleaseWspace\FH310_m0_unitest\ceedling\extras\fixture\src" -I"D:\MetranProject\FH310\ReleaseWspace\lpc_chip_43xx_m0\inc" -I"D:\MetranProject\FH310\ReleaseWspace\lpc_chip_43xx_m0\inc\usbd" -O0 -fno-common -g3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -mcpu=cortex-m0 -mthumb -specs=redlib.specs -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
+	@echo 'Finished building: $<'
+	@echo ' '
+
+

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;VeuUnitTest/BD/inc/ModeMockFunction.h&apos; to &apos;StepMotorMockFunction.h&apos;" description="Rename resource &apos;ModeMockFunction.h&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="BD/inc/ModeMockFunction.h" name="StepMotorMockFunction.h" stamp="1526889282037" updateReferences="true"/>
+</session>

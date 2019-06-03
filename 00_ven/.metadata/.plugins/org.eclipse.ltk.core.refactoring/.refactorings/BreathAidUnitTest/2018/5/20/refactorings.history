@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;BreathAidUnitTest/System/arc&apos; to &apos;src&apos;" description="Rename resource &apos;arc&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="System/arc" name="src" stamp="1526543251520" updateReferences="true"/>
+</session>

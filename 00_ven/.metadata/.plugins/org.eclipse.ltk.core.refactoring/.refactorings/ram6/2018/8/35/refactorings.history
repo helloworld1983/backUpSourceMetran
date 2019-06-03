@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="Rename resource &apos;ram6/link/ram6_Debug.ld&apos; to &apos;ram6_Debug_test.ld&apos;" description="Rename resource &apos;ram6_Debug.ld&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="link/ram6_Debug.ld" name="ram6_Debug_test.ld" stamp="1535507498713" updateReferences="true"/>&#x0A;<refactoring comment="Rename resource &apos;ram6/link/ram6_Debug.ld&apos; to &apos;ram6_Debug_test.ld&apos;" description="Rename resource &apos;ram6_Debug.ld&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="link/ram6_Debug.ld" name="ram6_Debug_test.ld" stamp="1535507732827" updateReferences="true"/>
+</session>

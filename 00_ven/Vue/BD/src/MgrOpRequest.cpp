@@ -1,0 +1,165 @@
+/******************************************************************************/
+//$COMMON.CPP$
+//   File Name:  MgrOpRequest.cpp
+//   Copyright 1997 Inventive Technologies,Inc. All Rights Reserved.
+//
+//   Purpose: This file contains the MgrOpRequest class, which defines the
+//      Operator Request Manager.  The MgrOpRequest accepts operator request
+//      events from the BD Task and distributes them to the appropriate
+//      OpRequest object.
+//
+//   Interfaces:
+//      MgrOpRequest instantiates all OpRequest objects when it is created
+//      at start-up.  It then maintains a list of pointers to all of the
+//      OpRequest objects.
+//
+//      BdTask::Entry() invokes the ReceiveRequest() operation of this class
+//      when any operator request event is placed on its queue.  
+//      ReceiveRequest() invokes the ProcessRequest() operation of the 
+//      appropriate operator request. 
+//
+//   Restrictions:
+//      There is only 1 instance of this class.
+/******************************************************************************/
+#include "MgrOpRequest.h"
+#include "TriggerMgr.h"
+#include "AlarmResetOpReqTrigger.h"
+#include "ManualInhOpReqTrigger.h"
+#include "ShutdownOpRequest.h"
+#include "OilPumpOpRequest.h"
+
+#include "DebugTrace.h"
+
+// Define statics
+MgrOpRequest* MgrOpRequest::S_Instance = NULL;
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: S_GetInstance()
+//
+//    Processing:
+//      Since only 1 instance of this object should be created, any access
+//      to the object comes via this operation.  If any other object wants to
+//      access the MgrOpRequest object, it calls MgrOpRequest::S_GetInstance(),
+//      which returns a pointer to the MgrOpRequest object.
+//
+//      If the object has not already been created, this method instantiates
+//      it and returns a pointer to the object.  If the object has already been
+//      instantiated, a pointer to the object is returned.
+//
+//    Input Parameters:
+//      None
+//
+//    Output Parameters:
+//      None
+//
+//    Return Values:
+//      MgrOpRequest* - pointer to the object instantiated from this class
+//
+//    Pre-Conditions:
+//      None
+//
+//    Miscellaneous:
+//      None
+//
+//    Requirements:
+//
+/******************************************************************************/
+MgrOpRequest* MgrOpRequest::S_GetInstance (void)
+{
+    // If the object has not already been created, create it.
+    if(NULL == S_Instance)
+    {
+        S_Instance = new MgrOpRequest ();
+        ASSERTION(S_Instance != NULL);
+    }
+
+    return (S_Instance);
+
+}   // end S_GetInstance()
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: ReceiveRequest()
+//
+//    Processing: 
+//      This operation is invoked by BdTask::Entry() when an operator request
+//      event is received on the BD Queue.  Based on the Event ID, this
+//      operation invokes the ProcessRequest() event of the OpRequest object
+//      for the request that has been made.
+//
+//    Input Parameters:
+//      bdEvent - constant reference to the event received on the BD Queue
+//
+//    Output Parameters:
+//      None
+//
+//    Return Values:
+//      None
+//
+//    Pre-Conditions:
+//      None
+//
+//    Miscellaneous:
+//      None
+//
+//    Requirements:  
+//
+/******************************************************************************/
+void MgrOpRequest::ReceiveRequest (const BdEvent& bdEvent)
+{
+    SHORT ix = bdEvent.OpRequestEvent.Id - eFirstOpRequestId;
+
+    OpReqPtrList[ix]->ProcessRequest (bdEvent.OpRequestEvent.Command);
+
+}   // end ReceiveRequest()
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: MgrOpRequest()
+//
+//    Processing: 
+//      This operation is the constructor for objects of this class.  This
+//      operation initializes the OpReqPtrList by invoking the S_GetInstance()
+//      method of each of the OpRequests.
+//
+//    Input Parameters:
+//      None
+//
+//    Output Parameters:
+//      None
+//
+//    Return Values:
+//      None
+//
+//    Pre-Conditions:
+//      None
+//
+//    Miscellaneous:
+//      None
+//
+//    Requirements:  
+//
+/******************************************************************************/
+MgrOpRequest::MgrOpRequest (void)
+{
+    DEBUG_MGR_OPREQUEST("initialize MgrOpRequest list (%d)\n\t", eLastOpRequestId - eFirstOpRequestId + 1);
+
+    OpReqPtrList[eAlarmResetId - eFirstOpRequestId] = AlarmResetOpReqTrigger::S_GetInstance();
+    DEBUG_MGR_OPREQUEST("%d ", eAlarmResetId - eFirstOpRequestId);
+#ifdef HFO_SYSTEM
+
+    OpReqPtrList[eManualHoldId - eFirstOpRequestId] = SIOpRequest::S_GetInstance();
+    OpReqPtrList[eDoAutoSetId - eFirstOpRequestId] = DoAutoSetRequest::S_GetInstance();
+
+#endif
+
+    OpReqPtrList[eManualInhId - eFirstOpRequestId] = ManualInhOpReqTrigger::S_GetInstance();
+    DEBUG_MGR_OPREQUEST("%d ", eManualInhId - eFirstOpRequestId);
+    OpReqPtrList[eStartOilPumpId - eFirstOpRequestId] = OilPumpOpRequest::S_GetInstance();
+    DEBUG_MGR_OPREQUEST("%d ", eStartOilPumpId - eFirstOpRequestId);
+    OpReqPtrList[eShutdownRequestId- eFirstOpRequestId] = ShutdownOpRequest::S_GetInstance();
+    DEBUG_MGR_OPREQUEST("%d \n", eShutdownRequestId- eFirstOpRequestId);
+
+}   // end MgrOpRequest()
+

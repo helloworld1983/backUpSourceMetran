@@ -1,0 +1,83 @@
+/******************************************************************************/
+//$COMMON.H$
+//   File Name:  BdTask.h
+//   Copyright 1997 Inventive Technologies,Inc. All Rights Reserved.
+//
+//   Class: This file contains the class declarations for the Breath Delivery
+//      Task.  The BdTask class is derived from the Nucleus Plus RTOS base
+//      Task class.
+//
+/******************************************************************************/
+#ifndef BDTASK_H
+#define BDTASK_H
+
+#include "BdInterface.h"
+#include "MyQueue.h"
+#include "DebugTrace.h"
+#include "Timer.h"
+
+// o2 class timer
+// timer used to kick off patient data task processing of
+// Oxygen concentration
+class O2Timer : public Timer
+{
+    public:
+        O2Timer (void) : Timer("O2 Timer", 1*TICKS_PER_SEC, pdTRUE)
+    {
+    }
+        // Virtual routine to call upon expiration.
+        void ExpirationRoutine (void);
+
+    protected:
+    private:
+
+};  // class O2Timer
+
+const UNSIGNED INITIAL_SETTING_TIMEOUT = 5000 / MS_PER_TICK;
+
+//CLASS DECLARATIONS
+class BdTask
+{
+    public:
+        static BdTask* S_GetInstance (void);
+
+        // initialize all public access to domain objects
+        void Init (void);
+
+        //create alarm task
+        void BDCreateTask (void);
+
+        STATUS Send (BdBatchSettingsChangeEvent& batchEvent,UNSIGNED suspend = NU_SUSPEND);
+        STATUS Send (BdSingleSettingChangeEvent& singleSetEvent,UNSIGNED suspend = NU_SUSPEND);
+        STATUS Send (BdOpRequestEvent& opReqEvent, UNSIGNED suspend = NU_SUSPEND);
+        STATUS Send (BdBasicEvent& basicEvent, UNSIGNED suspend = NU_SUSPEND);
+
+        virtual E_ReturnStatus Send (E_DeviceId id);
+
+        //$COMMON.ATTRIBUTE$
+        //  Name: QueuePointer
+        //  Description:  Pointer to BD Task's Queue
+        //  Units: None
+        //  Range: n/a
+        static Q* BDQueuePtr;
+
+
+        static void Entry (void* pvParameters);
+    protected:
+    private:
+        BdTask (void);
+        BdTask (const BdTask&);
+
+        //$COMMON.ATTRIBUTE$
+        //  Name: S_Instance
+        //  Description:  Pointer to the single instance of this class.  
+        //  Units: None
+        //  Range: n/a
+        static BdTask* S_Instance;
+
+        static BdQEntry bdQEntry;
+        O2Timer o2Timer;
+};
+
+#endif //BDTASK_H
+

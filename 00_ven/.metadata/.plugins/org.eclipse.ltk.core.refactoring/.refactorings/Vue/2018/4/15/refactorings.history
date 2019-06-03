@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;Vue/BD/inc/InhPhase.H&apos; to &apos;InhPhase.h&apos;" description="Rename resource &apos;InhPhase.H&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="BD/inc/InhPhase.H" name="InhPhase.h" stamp="1523517059691" updateReferences="true"/>
+</session>

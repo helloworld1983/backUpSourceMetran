@@ -1,0 +1,288 @@
+//$COMMON.CPP$
+//   File Name:  DataBuffer.cpp
+//
+//   Purpose: This file contains the class declaration for the DataBuffer Class
+//
+/******************************************************************************/
+#include "databuffer.h"
+#include "DebugTrace.h"
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: DataBuffer(USHORT size)
+//
+//    Processing: constructor for DataBuffer class
+//
+//    Input Parameters: None
+//
+//    Output Parameters: None
+//
+//    Return Values: None
+//
+//    Pre-conditions: None
+//
+//    Miscellaneous: None
+//
+//    Requirements: None
+//
+/******************************************************************************/
+DataBuffer::DataBuffer(USHORT size)
+{
+
+    USHORT i;
+    DataBuf = new LONG[size];
+
+    for(i=0;i<size;i++)
+    {
+        DataBuf[i] = 0;
+    }
+
+    DataSize = 0;
+    Index = 0;
+    MaxValue = 0;
+    MinValue = 0;
+
+    //Restore size of DataBuf
+    BufferSize = size;
+}
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: ~DataBuffer
+//
+//    Processing: Destructors for DataBuffer class
+//
+//    Input Parameters: None
+//
+//    Output Parameters: None
+//
+//    Return Values: None
+//
+//    Pre-conditions: None
+//
+//    Miscellaneous: None
+//
+//    Requirements: None
+//
+/******************************************************************************/
+DataBuffer::~DataBuffer(void)
+{
+    delete    DataBuf;
+}
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: InsertNewValue(LONG value)
+//
+//    Processing: Insert new value to buffer
+//
+//    Input Parameters: LONG value - value that needed to insert
+//
+//    Output Parameters: None
+//
+//    Return Values: None
+//
+//    Pre-conditions: None
+//
+//    Miscellaneous: None
+//
+//    Requirements: None
+//
+/******************************************************************************/
+void DataBuffer::InsertNewValue(LONG value)
+{
+
+    if ( DataSize < BufferSize )
+        DataSize++;
+
+    DataBuf[Index] = value;
+    Index++;
+    Index = Index % BufferSize;
+}
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name:ClearDataBuffer(void)
+//
+//    Processing: clear data buffer
+//
+//    Input Parameters: None
+//
+//    Output Parameters: None
+//
+//    Return Values: None
+//
+//    Pre-conditions: None
+//
+//    Miscellaneous: None
+//
+//    Requirements: None
+//
+/******************************************************************************/
+void DataBuffer::ClearDataBuffer(void)
+{
+    USHORT i;
+
+    for(i=0;i<DataSize;i++)
+    {
+        DataBuf[i] = 0;
+    }
+
+    DataSize = 0;
+    Index = 0;
+}
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name:GetMaxValue(void)
+//
+//    Processing: get max value of buffer
+//
+//    Input Parameters: None
+//
+//    Output Parameters: None
+//
+//    Return Values: FindMaxValue()
+//
+//    Pre-conditions: None
+//
+//    Miscellaneous: None
+//
+//    Requirements: None
+//
+/******************************************************************************/
+LONG DataBuffer::GetMaxValue(void)
+{
+    return FindMaxValue();
+}
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: GetMinValue(void)
+//
+//    Processing: find min value of buffer
+//
+//    Input Parameters: None
+//
+//    Output Parameters: None
+//
+//    Return Values: FindMinValue - min value of buffer
+//
+//    Pre-conditions: None
+//
+//    Miscellaneous: None
+//
+//    Requirements: None
+//
+/******************************************************************************/
+LONG DataBuffer::GetMinValue(void)
+{
+    return FindMinValue();
+}
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: FindMaxValue(void)
+//
+//    Processing: find max value of buffer
+//
+//    Input Parameters: None
+//
+//    Output Parameters: None
+//
+//    Return Values: max - max value of buffer
+//
+//    Pre-conditions: None
+//
+//    Miscellaneous: None
+//
+//    Requirements: None
+//
+/******************************************************************************/
+LONG DataBuffer::FindMaxValue(void)
+{
+    LONG max;
+
+    max = DataBuf[0];
+
+    for(USHORT i=1;i < DataSize;i++)
+    {
+        if(max<DataBuf[i])
+        {
+            max=DataBuf[i];
+        }
+    }
+
+    return max;
+}
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name:FindMinValue(void)
+//
+//    Processing: find min value of buffer
+//
+//    Input Parameters: None
+//
+//    Output Parameters: None
+//
+//    Return Values: min - min value of buffer
+//
+//    Pre-conditions: None
+//
+//    Miscellaneous: None
+//
+//    Requirements: None
+//
+/******************************************************************************/
+LONG DataBuffer::FindMinValue(void)
+{
+    LONG min;
+
+    min=DataBuf[0];
+
+    for(USHORT i=1;i < DataSize;i++)
+    {
+        if(min>DataBuf[i])
+        {
+            min=DataBuf[i];
+        }
+    }
+
+    return min;
+
+}
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: FindAverageValue
+//
+//    Processing: find average value in buffer
+//
+//    Input Parameters: None
+//
+//    Output Parameters: None
+//
+//    Return Values: total/DataSize - average value
+//
+//    Pre-conditions: None
+//
+//    Miscellaneous: None
+//
+//    Requirements: None
+//
+/******************************************************************************/
+LONG DataBuffer::FindAverageValue(void)
+{
+    LONG total = 0;
+
+    for(USHORT i=0 ;i < DataSize;i++)
+    {
+        total += DataBuf[i];
+    }
+
+
+    return (total/DataSize);
+}
+
+

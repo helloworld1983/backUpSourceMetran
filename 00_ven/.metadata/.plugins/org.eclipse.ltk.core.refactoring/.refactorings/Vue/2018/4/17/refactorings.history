@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="Rename resource &apos;Vue/BD/inc/MgrDevices.h&apos; to &apos;DeviceInterface.h&apos;" description="Rename resource &apos;MgrDevices.h&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="BD/inc/MgrDevices.h" name="DeviceInterface.h" stamp="1524539278788" updateReferences="true"/>&#x0A;<refactoring comment="Rename resource &apos;Vue/BD/src/MgrDevices.cpp&apos; to &apos;DeviceInterface.cpp&apos;" description="Rename resource &apos;MgrDevices.cpp&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="BD/src/MgrDevices.cpp" name="DeviceInterface.cpp" stamp="1524539294492" updateReferences="true"/>
+</session>

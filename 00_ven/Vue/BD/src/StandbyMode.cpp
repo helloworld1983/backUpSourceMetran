@@ -1,0 +1,365 @@
+/******************************************************************************/
+//$COMMON.CPP$
+//   File Name:  StartupMode.cpp
+//   Copyright 1997 Inventive Technologies,Inc. All Rights Reserved.
+//
+//   Purpose: 
+//      This file contains the definition of the Start-Up Mode.  The Start-Up
+//      Mode is entered at power up and is exited once the BD Task enters
+//      its main loop after it has received the settings from the GUI.
+//
+//   Interfaces:
+//      The ProcessImmediateTrigger() operation in this class calls 
+//      ModeMgr::GoToOperatorSetMode() to transition to the operator set mode
+//      when the immediate trigger fires.  The Enter() and Exit() operations
+//      interface with the TriggerMgr to enable/disable the Immediate Trigger
+//      via the EnableTrigger() operation.  And, the Exit() operation interfaces
+//      with SafetyValve to close the safety valve when leaving the Start-Up
+//      Mode.  Exit() also interfaces with the flow controllers to enable 
+//      them and the Exhalation Controller to close the exhalation valve.
+//
+//   Restrictions:
+//      There is only 1 instance of this class.
+//
+//   Revision History:
+//      Rev:  Date:     Engineer:           Project:
+//      07    12/15/98  Dan Seibert       HUMX
+//      Description: Added call to reset() flow controller gains when
+//        closing air/o2 valves.
+//
+//      Rev:  Date:     Engineer:           Project:
+//      06    10/14/97  K.A. McGuigan       HUMX
+//      Description: Updated per code review.
+//
+//      Rev:  Date:     Engineer:           Project:
+//      05    06/13/97  K.A. McGuigan       HUMX
+//      Description: 
+//          Removed closing of exhalation valve on exit from StartupMode.
+//
+//      Rev:  Date:     Engineer:           Project:
+//      04    06/03/97  K.A. McGuigan       HUMX
+//      Description: 
+//          SCR 34 - Used SetStateDirect instead of SetState to close the SV.
+//
+//      Rev:  Date:     Engineer:           Project:
+//      03    05/13/97  K.A. McGuigan       HUMX
+//      Description: Added interface to close the safety valve on start-up.
+//
+//      Rev:  Date:     Engineer:           Project:
+//      02    03/11/97  K.A. McGuigan       HUMX
+//      Description: Updated interface with the controllers.
+//
+//      01    01/21/97  K.A. McGuigan       HUMX
+//      Description: Initial Revision
+//
+/******************************************************************************/
+#include "StandbyMode.h"
+#include "TriggerMgr.h"
+#include "ModeMgr.h"
+#include "PhaseMgr.h"
+#include "PdInterface.h"
+#include "PdTask.h"
+#include "MgrDiscreteOutput.h"
+#include "MgrStemMotor.h"
+#include "WatchDogTimer.h"
+
+#include "DebugTrace.h"
+
+// Initialize statics
+StandbyMode* StandbyMode::S_Instance = NULL;
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: S_GetInstance()
+//
+//    Processing:
+//      Since only 1 instance of this object should be created, any access
+//      to the object comes via this operation.  If any other object wants
+//      access to the StandbyMode object, it calls StandbyMode::S_GetInstance(),
+//      which returns a pointer to the StandbyMode object.
+//
+//      If the object has not already been created, this method instantiates
+//      it and returns a pointer to the object.  If the object has already been
+//      instantiated, a pointer to the object is returned.
+//
+//    Input Parameters:
+//      None
+//
+//    Output Parameters:
+//      None
+//
+//    Return Values:
+//      StandbyMode* - pointer to the object instantiated from this class
+//
+//    Pre-Conditions:
+//      None
+//
+//    Miscellaneous:
+//      None
+//
+//    Requirements:
+//
+/******************************************************************************/
+StandbyMode* StandbyMode::S_GetInstance(void)
+{
+    // If the object has not already been created, create it.
+    if (NULL == S_Instance)
+    {
+        S_Instance = new StandbyMode();
+        ASSERTION(S_Instance != NULL);
+    }
+
+    return(S_Instance);
+
+}   // end S_GetInstance()
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: StandbyMode()
+//
+//    Processing: 
+//      This operation is the constructor for the Start-Up Mode.  It invokes the
+//      base class Mode constructor.
+//
+//    Input Parameters:
+//      None
+//
+//    Output Parameters:
+//      None
+//
+//    Return Values:
+//      None
+//
+//    Pre-Conditions:
+//      None
+//
+//    Miscellaneous:
+//      None
+//
+//    Requirements:
+//
+/******************************************************************************/
+StandbyMode::StandbyMode(void):Mode()
+{
+
+}   // end StandbyMode()
+
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: Enter()
+//
+//    Processing: 
+//      This operation is called from the BD Task entry point during 
+//      initialization.  This operation calls TriggerMgr::EnableTrigger()
+//      to enable the Immediate Trigger, which will fire once the BD Task
+//      enters its main loop.
+//
+//    Input Parameters:
+//      Not Used
+//
+//    Output Parameters:
+//      None
+//
+//    Return Values:
+//      None
+//
+//    Pre-Conditions:
+//      It is assumed that the ventilator is in a safe state by the time
+//      this mode is entered.  In the safe state, the exhalation and safety
+//      valves are open, the delivery valves are closed and the controllers
+//      are disabled.  
+//
+//    Miscellaneous:
+//      None
+//
+//    Requirements:
+//
+/******************************************************************************/
+void StandbyMode::Enter(E_VentilationMode fromModeId)
+{
+//    MgrDiscreteOutput::PurgeFlow->SetStateDirect(eOff);
+//    MgrDiscreteOutput::OilPump->SetDesiredState(eOff); //close OilPump
+
+    // Set state to on, and desired to off to make sure that this writen to the port, due to state and desired difference
+//    MgrDiscreteOutput::InpedanceLine->SetState(eOn);
+//    MgrDiscreteOutput::InpedanceLine->SetDesiredState(eOff);
+//    HfoController->Disable();
+
+    // Initialize pointer to the TriggerMgr
+    TriggerMgr* triggerMgrPtr = TriggerMgr::S_GetInstance();
+//    MgrDiscreteOutput::SafetyValve->SetDesiredState(eOpen);
+
+    triggerMgrPtr->DisableAllTriggers();
+    // Enable the mode change trigger.
+    triggerMgrPtr->EnableTrigger(eModeChangeTrigger);
+
+
+    PhaseMgr::S_GetInstance()->ProcessNewPhase(eDiagnosticPhase);
+//
+//    PInhAzTestPtr->SuspendTest();
+//    PExhAzTestPtr->SuspendTest();
+//
+//    //blank all patient data when enter standbymode
+    (PdTask::S_GetInstance())->S_SetEventFlag(NONBREATHING_MODE_EVENT_FLAG);
+//    MainHandlerDelegate::S_GetInstance()->postCustomEvent(eAmpAlarmAutoSetStopEvent);
+
+//    MgrStemMotor::HfoValve->DisableMotorErrorCheck();
+//    MgrStemMotor::O2Valve->DisableMotorErrorCheck();
+//    MgrStemMotor::AirValve->DisableMotorErrorCheck();
+//    MgrStemMotor::ExhValve->DisableMotorErrorCheck();
+//    WatchDogTimer::S_GetInstance()->DisableWatchDog();
+}   // end Enter()
+
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: Exit()
+//
+//    Processing: 
+//      This operation is called from ModeMgr::GoToOperatorSetMode() when
+//      the Immediate Trigger Fires.  This operation invokes
+//      SafetyValve::SetStateDirect() to close the safety valve.
+//      This operation also calls the Enable() operations
+//      of the Air and Oxygen Flow Controllers to enable the controllers.
+//      Finally, TriggerMgr::DisableTrigger() is invoked to disable the
+//      Immediate Trigger.
+//
+//    Input Parameters:
+//      None
+//
+//    Output Parameters:
+//      None
+//
+//    Return Values:
+//      None
+//
+//    Pre-Conditions:
+//      SafetyValve, AirFlowController and O2FlowController objects have
+//      already been created.
+//
+//    Miscellaneous:
+//      None
+//
+//    Requirements:  
+//
+/******************************************************************************/
+void StandbyMode::Exit(void)
+{
+    (PdTask::S_GetInstance())->S_SetEventFlag(EXIT_STANDBYMODE_FLAG);
+    MgrDiscreteOutput::SafetyValve->SetDesiredState(eOpen);
+    MgrDiscreteOutput::PurgeFlow->SetDesiredState(eOn);
+
+//    PInhAzTestPtr->ResumeTest();
+//    PExhAzTestPtr->ResumeTest();
+
+    MgrStemMotor::HfoValve->EnableMotorErrorCheck();
+    MgrStemMotor::O2Valve->EnableMotorErrorCheck();
+    MgrStemMotor::AirValve->EnableMotorErrorCheck();
+    MgrStemMotor::ExhValve->EnableMotorErrorCheck();
+
+//    WatchDogTimer::S_GetInstance()->EnableWatchDog();
+
+}   // end Exit()
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: UpdateAlarmStatus()
+//
+//    Processing:
+//      This operation simply performs error handling.  It should never be
+//      invoked but is defined here since it is declared as a pure virtual
+//      operation in the base class.
+//
+//    Input Parameters:
+//      None
+//
+//    Output Parameters:
+//      None
+//
+//    Return Values:
+//      None
+//
+//    Pre-Conditions:
+//      None
+//
+//    Miscellaneous:
+//      This operation should not be invoked.
+//
+//    Requirements:
+//
+/******************************************************************************/
+void StandbyMode::UpdateAlarmStatus(void)
+{
+    // This operation should never be called.
+    ASSERTION(eFalse);
+
+}  // end UpdateAlarmStatus()
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: ProcessModeChangeTrigger()
+//
+//    Processing:
+//      This operation simply performs error handling.  It should never be
+//      invoked but is defined here since it is declared as a pure virtual
+//      operation in the base class.
+//
+//    Input Parameters:
+//      None
+//
+//    Output Parameters:
+//      None
+//
+//    Return Values:
+//      None
+//
+//    Pre-Conditions:
+//      None
+//
+//    Miscellaneous:
+//      This operation should not be invoked.
+//
+//    Requirements:
+//
+/******************************************************************************/
+void StandbyMode::ProcessModeChangeTrigger(void)
+{
+    (ModeMgr::S_GetInstance())->GoToOperatorSetMode();
+}
+
+/******************************************************************************/
+//$COMMON.OPERATION$
+//    Operation Name: ProcessTriggerID(E_TriggerId id)
+//
+//    Processing: Process action for each trigger ID of Standby Mode
+//
+//    Input Parameters:
+//      E_TriggerId id
+//
+//    Output Parameters:
+//      None
+//
+//    Return Values:
+//      None
+//
+//    Pre-Conditions:
+//      None
+//
+//    Miscellaneous:
+//
+//    Requirements:
+//
+/******************************************************************************/
+void StandbyMode::ProcessTriggerID (E_TriggerId id)
+{
+    switch (id)
+    {
+        case eModeChangeTrigger:
+            ProcessModeChangeTrigger();
+            break;
+
+        default:
+            ASSERTION(eFalse);
+            break;
+    }
+}

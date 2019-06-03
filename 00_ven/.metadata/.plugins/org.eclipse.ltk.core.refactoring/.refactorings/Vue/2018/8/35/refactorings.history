@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="Rename resource &apos;Vue/linkscripts/NVen_Debug_Test.ld&apos; to &apos;Vue_Debug.ld&apos;" description="Rename resource &apos;NVen_Debug_Test.ld&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="linkscripts/NVen_Debug_Test.ld" name="Vue_Debug.ld" stamp="1535443650491" updateReferences="true"/>&#x0A;<refactoring comment="Rename resource &apos;Vue/linkscripts/Vue_Debug.ld&apos; to &apos;Vue_Debug_test.ld&apos;" description="Rename resource &apos;Vue_Debug.ld&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="linkscripts/Vue_Debug.ld" name="Vue_Debug_test.ld" stamp="1535443837331" updateReferences="true"/>
+</session>

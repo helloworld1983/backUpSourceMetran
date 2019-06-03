@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding= "UTF-8" ?>
+<configuration name="MIMX8MQ6xxxHZ" version="1.4" xsi:schemaLocation="http://mcuxpresso.nxp.com/XSD/mex_configuration_1.4 http://mcuxpresso.nxp.com/XSD/mex_configuration_1.4.xsd" uuid="a2dde240-21c4-4d9c-ac17-3171e0657f31" xmlns="http://mcuxpresso.nxp.com/XSD/mex_configuration_1.4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <common>
+      <processor>MIMX8MQ6xxxHZ</processor>
+      <package>MIMX8MQ6CVAHZ</package>
+      <board></board>
+      <mcu_data>ksdk2_0</mcu_data>
+      <cores selected="">
+         <core name="Cortex-A53(core#0)" id="a53_0" description="A53 core0"/>
+         <core name="Cortex-A53(core#1)" id="a53_1" description="A53 core1"/>
+         <core name="Cortex-A53(core#2)" id="a53_2" description="A53 core2"/>
+         <core name="Cortex-A53(core#3)" id="a53_3" description="A53 core3"/>
+         <core name="Cortex-M4F" id="m4" description="M4 core"/>
+      </cores>
+      <description></description>
+   </common>
+   <preferences>
+      <validate_boot_init_only>true</validate_boot_init_only>
+      <generate_extended_information>false</generate_extended_information>
+   </preferences>
+   <tools>
+      <pins name="Pins" version="4.1" enabled="true" update_project_code="true">
+         <pins_profile>
+            <processor_version>3.0.0</processor_version>
+            <power_domains/>
+         </pins_profile>
+         <functions_list>
+            <function name="BOARD_InitPins">
+               <description>Configures pin routing and optionally pin electrical features.&amp;lt;br/&amp;gt;</description>
+               <options>
+                  <callFromInitBoot>true</callFromInitBoot>
+                  <coreID>a53_0</coreID>
+               </options>
+               <dependencies/>
+               <pins>
+                  <pin peripheral="GPIO1" signal="gpio_io, 27" pin_num="U21" pin_signal="ENET_RD1"/>
+                  <pin peripheral="GPIO1" signal="gpio_io, 26" pin_num="U19" pin_signal="ENET_RD0"/>
+                  <pin peripheral="GPIO1" signal="gpio_io, 24" pin_num="T21" pin_signal="ENET_RX_CTL"/>
+                  <pin peripheral="GPIO1" signal="gpio_io, 25" pin_num="T20" pin_signal="ENET_RXC"/>
+                  <pin peripheral="GPIO1" signal="gpio_io, 17" pin_num="N19" pin_signal="ENET_MDIO"/>
+                  <pin peripheral="GPIO1" signal="gpio_io, 16" pin_num="N20" pin_signal="ENET_MDC"/>
+                  <pin peripheral="GPIO3" signal="gpio_io, 12" pin_num="L19" pin_signal="NAND_DATA06"/>
+                  <pin peripheral="GPIO3" signal="gpio_io, 16" pin_num="K20" pin_signal="NAND_READY_B"/>
+                  <pin peripheral="GPIO3" signal="gpio_io, 04" pin_num="H20" pin_signal="NAND_CE3_B"/>
+                  <pin peripheral="GPIO3" signal="gpio_io, 07" pin_num="J20" pin_signal="NAND_DATA01"/>
+                  <pin peripheral="GPIO3" signal="gpio_io, 13" pin_num="M19" pin_signal="NAND_DATA07"/>
+                  <pin peripheral="GPIO1" signal="gpio_io, 20" pin_num="R21" pin_signal="ENET_TD1"/>
+                  <pin peripheral="GPIO1" signal="gpio_io, 21" pin_num="R20" pin_signal="ENET_TD0"/>
+                  <pin peripheral="GPIO1" signal="gpio_io, 23" pin_num="T19" pin_signal="ENET_TXC"/>
+                  <pin peripheral="GPIO4" signal="gpio_io, 01" pin_num="K1" pin_signal="SAI1_RXC"/>
+                  <pin peripheral="GPIO3" signal="gpio_io, 25" pin_num="K4" pin_signal="SAI5_MCLK"/>
+                  <pin peripheral="I2C4" signal="i2c_sda" pin_num="F9" pin_signal="I2C4_SDA"/>
+                  <pin peripheral="I2C4" signal="i2c_scl" pin_num="F8" pin_signal="I2C4_SCL"/>
+                  <pin peripheral="I2C1" signal="i2c_sda" pin_num="E8" pin_signal="I2C1_SDA"/>
+                  <pin peripheral="I2C1" signal="i2c_scl" pin_num="E7" pin_signal="I2C1_SCL"/>
+                  <pin peripheral="I2C2" signal="i2c_scl" pin_num="G7" pin_signal="I2C2_SCL"/>
+                  <pin peripheral="I2C2" signal="i2c_sda" pin_num="F7" pin_signal="I2C2_SDA"/>
+                  <pin peripheral="I2C3" signal="i2c_scl" pin_num="G8" pin_signal="I2C3_SCL"/>
+                  <pin peripheral="I2C3" signal="i2c_sda" pin_num="E9" pin_signal="I2C3_SDA"/>
+                  <pin peripheral="UART1" signal="uart_rx" pin_num="C7" pin_signal="UART1_RXD"/>
+                  <pin peripheral="UART1" signal="uart_tx" pin_num="A7" pin_signal="UART1_TXD"/>
+                  <pin peripheral="UART3" signal="uart_rx" pin_num="A6" pin_signal="UART3_RXD"/>
+                  <pin peripheral="UART3" signal="uart_tx" pin_num="B7" pin_signal="UART3_TXD"/>
+                  <pin peripheral="UART4" signal="uart_rx" pin_num="C5" pin_signal="ECSPI2_SCLK"/>
+                  <pin peripheral="UART4" signal="uart_tx" pin_num="E5" pin_signal="ECSPI2_MOSI"/>
+                  <pin peripheral="GPIO3" signal="gpio_io, 09" pin_num="J21" pin_signal="NAND_DATA03"/>
+                  <pin peripheral="GPIO3" signal="gpio_io, 08" pin_num="H22" pin_signal="NAND_DATA02"/>
+                  <pin peripheral="GPIO3" signal="gpio_io, 00" pin_num="G19" pin_signal="NAND_ALE"/>
+                  <pin peripheral="GPIO3" signal="gpio_io, 17" pin_num="K22" pin_signal="NAND_WE_B"/>
+                  <pin peripheral="GPIO3" signal="gpio_io, 05" pin_num="H21" pin_signal="NAND_CLE"/>
+                  <pin peripheral="GPIO3" signal="gpio_io, 02" pin_num="G21" pin_signal="NAND_CE1_B"/>
+                  <pin peripheral="ECSPI1" signal="ecspi_sclk" pin_num="D5" pin_signal="ECSPI1_SCLK"/>
+                  <pin peripheral="ECSPI1" signal="ecspi_miso" pin_num="B4" pin_signal="ECSPI1_MISO"/>
+                  <pin peripheral="ECSPI1" signal="ecspi_mosi" pin_num="A4" pin_signal="ECSPI1_MOSI"/>
+                  <pin peripheral="GPIO1" signal="gpio_io, 19" pin_num="R19" pin_signal="ENET_TD2"/>
+                  <pin peripheral="GPIO1" signal="gpio_io, 18" pin_num="P20" pin_signal="ENET_TD3"/>
+                  <pin peripheral="GPIO1" signal="gpio_io, 22" pin_num="P19" pin_signal="ENET_TX_CTL"/>
+               </pins>
+            </function>
+         </functions_list>
+      </pins>
+      <clocks name="Clocks" version="4.1" enabled="false" update_project_code="true">
+         <clocks_profile>
+            <processor_version>N/A</processor_version>
+         </clocks_profile>
+         <clock_configurations/>
+      </clocks>
+      <periphs name="Peripherals" version="4.1" enabled="false" update_project_code="true">
+         <peripherals_profile>
+            <processor_version>N/A</processor_version>
+         </peripherals_profile>
+         <functional_groups/>
+         <components/>
+      </periphs>
+   </tools>
+</configuration>

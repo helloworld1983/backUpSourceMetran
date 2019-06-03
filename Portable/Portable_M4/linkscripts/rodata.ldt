@@ -1,0 +1,7 @@
+<#global skipCompare=true> 
+
+<#if memory.alias=="Flash3">
+        *spifidata/*(.rodata*)
+</#if>
+    	*(.rodata.$${memory.alias}*)
+    	*(.rodata.$${memory.name}*)

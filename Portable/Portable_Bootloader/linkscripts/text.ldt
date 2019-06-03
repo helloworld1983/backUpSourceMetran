@@ -1,0 +1,23 @@
+<#global skipCompare=true> 
+
+<#if memory.alias=="Flash2">
+        *Bootloader/*(.text*)
+        *fatfs/*(.text*)
+        *lpcusblib/*(.text*)
+        *lib_lpcspifilib/*(.text*)
+        *lpc_board_ea_oem_4357/*(.text*)
+        *lpc_chip_43xx/*(.text*)
+        *flashbankdata/*(.text*)            
+</#if>
+    	*(.text_${memory.alias}*) /* for compatibility with previous releases */
+    	*(.text_${memory.name}*) /* for compatibility with previous releases */
+    	*(.text.$${memory.alias}*)
+    	*(.text.$${memory.name}*)
+    	
+ <#if memory.alias=="Flash3">
+        *spifidataBoot/*(.text*)    
+</#if>
+    	*(.text_${memory.alias}*) /* for compatibility with previous releases */
+    	*(.text_${memory.name}*) /* for compatibility with previous releases */
+    	*(.text.$${memory.alias}*)
+    	*(.text.$${memory.name}*)

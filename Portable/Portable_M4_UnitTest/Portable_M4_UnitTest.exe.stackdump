@@ -1,0 +1,7 @@
+Exception: STATUS_ACCESS_VIOLATION at eip=00404D16
+eax=00000000 ebx=200A9D00 ecx=200B0B80 edx=00000000 esi=00000011 edi=00404D8A
+ebp=00000000 esp=0134C9DC program=C:\Users\WINDOWS\Desktop\AnhTam\PortableV0108\Portable_M4_UnitTest\Release\Portable_M4_UnitTest.exe, pid 13196, thread main
+cs=0023 ds=002B es=002B fs=0053 gs=002B ss=002B
+Stack trace:
+Frame     Function  Args
+End of stack trace

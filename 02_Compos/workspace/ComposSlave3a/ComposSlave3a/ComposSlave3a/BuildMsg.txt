@@ -1,0 +1,5 @@
+Starting MAKE...
+creating project.mk -- no changes
+ 
+ComposSlave3a - 0 error(s) 0 warning(s) 14:51:40
+

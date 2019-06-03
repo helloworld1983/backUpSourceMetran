@@ -1,0 +1,19 @@
+[HIMDBVersion]
+2.0
+[DATABASE_VERSION]
+"1.2" 
+[CURRENT_PROJECT]
+"ComposX" 
+[GENERAL_DATA]
+[BREAKPOINTS]
+[OPEN_WORKSPACE_FILES]
+"E:\myDrive\00_source_workspace\02_Compos\workspace\ComposX\ComposX\Alarm_Apnea.c" 
+"E:\myDrive\00_source_workspace\02_Compos\workspace\ComposX\ComposX\I2C_comm.h" 
+"E:\myDrive\00_source_workspace\02_Compos\workspace\ComposX\ComposX\operate.c" 
+[WORKSPACE_FILE_STATES]
+"E:\myDrive\00_source_workspace\02_Compos\workspace\ComposX\ComposX\Alarm_Apnea.c" 0 0 959 388 0 0 
+"E:\myDrive\00_source_workspace\02_Compos\workspace\ComposX\ComposX\I2C_comm.h" -8 -31 319 686 1 2 
+"E:\myDrive\00_source_workspace\02_Compos\workspace\ComposX\ComposX\operate.c" 0 0 333 686 0 1 
+[LOADED_PROJECTS]
+"ComposX" 
+[END]

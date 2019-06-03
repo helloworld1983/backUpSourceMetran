@@ -1,0 +1,5 @@
+<PSOC_DB>
+  <PSOC_PROJECT_LIST>
+    <PSOC_PROJECT PATH="\ComposSlave3a\ComposSlave3a.cmx" IS_ACTIVE="TRUE" />
+  </PSOC_PROJECT_LIST>
+</PSOC_DB>
